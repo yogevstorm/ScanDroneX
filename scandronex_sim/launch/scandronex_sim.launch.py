@@ -18,6 +18,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
+    ExecuteProcess,
     IncludeLaunchDescription,
     TimerAction,
 )
@@ -85,6 +86,23 @@ def generate_launch_description():
         ],
     )
 
+    # ── Auto-takeoff ────────────────────────────────────────────────────────
+    # Publish one Empty msg to /simple_drone/takeoff after spawn settles.
+    # Without this the drone stays in LANDED state and ignores cmd_vel.
+    auto_takeoff = TimerAction(
+        period=6.0,
+        actions=[
+            ExecuteProcess(
+                cmd=[
+                    'ros2', 'topic', 'pub', '--once',
+                    '/simple_drone/takeoff',
+                    'std_msgs/msg/Empty', '{}',
+                ],
+                output='screen',
+            )
+        ],
+    )
+
     # ── Joystick node ───────────────────────────────────────────────────────
     joy_node = Node(
         package='joy',
@@ -122,6 +140,7 @@ def generate_launch_description():
         gazebo,
         robot_state_publisher,
         spawn_drone,
+        auto_takeoff,
         joy_node,
         teleop_node,
     ])

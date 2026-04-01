@@ -32,5 +32,6 @@ teleop_twist_joy_node:
     scale_angular_turbo:
       yaw: 3.0
 
-    enable_button: 5        # RB / R1 — hold to move
-    enable_turbo_button: 4  # LB / L1 — hold for turbo
+    require_enable_button: false  # publish without holding any button
+    enable_button: 5              # RB / R1 — still used for turbo reference
+    enable_turbo_button: 4        # LB / L1 — hold for turbo
