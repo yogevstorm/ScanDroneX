@@ -1,19 +1,5 @@
 import os
 
-# Source Gazebo environment so gzserver can find its plugins
-os.environ.setdefault('GAZEBO_MODEL_PATH', '')
-_gazebo_setup = '/usr/share/gazebo/setup.sh'
-if os.path.exists(_gazebo_setup):
-    import subprocess
-    _env = subprocess.run(
-        ['bash', '-c', f'source {_gazebo_setup} && env'],
-        capture_output=True, text=True
-    )
-    for line in _env.stdout.splitlines():
-        if '=' in line:
-            k, _, v = line.partition('=')
-            os.environ[k] = v
-
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
