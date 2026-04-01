@@ -28,13 +28,14 @@ def generate_launch_description():
     urdf_file = os.path.join(pkg, 'urdf', 'sjtu_drone_with_lidar.urdf.xacro')
     robot_description = ParameterValue(Command(['xacro ', urdf_file]), value_type=str)
 
-    # ── Gazebo (empty world) ────────────────────────────────────────────────
+    # ── Gazebo (world1) ─────────────────────────────────────────────────────
+    world_file = os.path.join(pkg, 'worlds', 'world1.world')
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(gazebo_ros_pkg, 'launch', 'gazebo.launch.py')
         ),
         launch_arguments={
-            'world': '',          # empty world
+            'world': world_file,
             'verbose': 'false',
         }.items(),
     )
