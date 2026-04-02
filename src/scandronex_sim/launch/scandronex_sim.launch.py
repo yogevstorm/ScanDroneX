@@ -29,7 +29,8 @@ def generate_launch_description():
     robot_description = ParameterValue(Command(['xacro ', urdf_file]), value_type=str)
 
     # ── Gazebo (world1) ─────────────────────────────────────────────────────
-    world_file = os.path.join(pkg, 'worlds', 'world1.world')
+    world_file = os.path.join(pkg, 'worlds', 'world2.world')
+    # world_file = os.path.join(gazebo_ros_pkg, 'worlds', 'empty.world')
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(gazebo_ros_pkg, 'launch', 'gazebo.launch.py')
