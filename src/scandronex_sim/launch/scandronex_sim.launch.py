@@ -104,19 +104,12 @@ def generate_launch_description():
         }],
     )
 
-    # ── Teleop twist joy ────────────────────────────────────────────────────
-    # Remaps /cmd_vel → /simple_drone/cmd_vel (sjtu_drone topic)
+    # ── Teleop joy ─────────────────────────────────────────────────────────
     teleop_node = Node(
-        package='teleop_twist_joy',
-        executable='teleop_node',
-        name='teleop_twist_joy_node',
-        parameters=[
-            os.path.join(pkg, 'config', 'joy_teleop.yaml'),
-            {'use_sim_time': use_sim_time},
-        ],
-        remappings=[
-            ('/cmd_vel', '/simple_drone/cmd_vel'),
-        ],
+        package='joy_teleop_cpp',
+        executable='joy_teleop_node',
+        name='joy_teleop_node',
+        parameters=[{'use_sim_time': use_sim_time}],
     )
 
     return LaunchDescription([
