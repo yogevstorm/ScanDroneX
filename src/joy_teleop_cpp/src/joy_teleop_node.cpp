@@ -26,8 +26,8 @@ void JoyTeleopNode::joyCallback(const sensor_msgs::msg::Joy::SharedPtr msg)
   if (msg->axes.size() >= 4) {
     twist.linear.x  = scale(msg->axes[1], MAX_LINEAR);
     twist.linear.y  = scale(msg->axes[0], MAX_LINEAR);
-    twist.linear.z  = scale(msg->axes[3], MAX_LINEAR);
-    twist.angular.z = scale(msg->axes[2], MAX_ANGULAR);
+    twist.linear.z  = scale(msg->axes[4], MAX_LINEAR);
+    twist.angular.z = scale(msg->axes[3], MAX_ANGULAR);
   }
   cmd_vel_pub_->publish(twist);
 
