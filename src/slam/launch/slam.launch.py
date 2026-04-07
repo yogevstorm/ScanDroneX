@@ -24,10 +24,6 @@ def generate_launch_description():
         default_value=default_params_file,
         description='Full path to the ROS2 parameters file to use for the slam_toolbox node')
 
-    # If the provided param file doesn't have slam_toolbox params, we must pass the
-    # default_params_file instead. This could happen due to automatic propagation of
-    # LaunchArguments. See:
-    # https://github.com/ros-planning/navigation2/pull/2243#issuecomment-800479866
     has_node_params = HasNodeParams(source_file=params_file,
                                     node_name='slam_toolbox')
 
@@ -49,11 +45,24 @@ def generate_launch_description():
         name='slam_toolbox',
         output='screen')
 
+    lifecycle_manager = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_slam',
+        output='screen',
+        parameters=[{
+            'use_sim_time': use_sim_time,
+            'autostart': True,
+            'node_names': ['slam_toolbox'],
+        }],
+    )
+
     ld = LaunchDescription()
 
     ld.add_action(declare_use_sim_time_argument)
     ld.add_action(declare_params_file_cmd)
     ld.add_action(log_param_change)
     ld.add_action(start_async_slam_toolbox_node)
+    ld.add_action(lifecycle_manager)
 
     return ld
