@@ -74,6 +74,9 @@ def _create_bridge(context, model_ns, model_name, link_name):
             + '@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
             _gz_sensor_topic('sonar', 'scan')
             + '@sensor_msgs/msg/Range[gz.msgs.LaserScan',
+            # 2-D LiDAR
+            _gz_sensor_topic('lidar', 'scan')
+            + '@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
         ],
         remappings=[
             (_gz_sensor_topic('sensor_imu', 'imu'), f'{model_ns}/imu'),
@@ -83,6 +86,7 @@ def _create_bridge(context, model_ns, model_name, link_name):
             (_gz_sensor_topic('down_camera', 'camera_info'), f'{model_ns}/bottom/camera_info'),
             (_gz_sensor_topic('navsat_sensor', 'navsat'), f'{model_ns}/navsat'),
             (_gz_sensor_topic('sonar', 'scan'), f'{model_ns}/sonar'),
+            (_gz_sensor_topic('lidar', 'scan'), f'{model_ns}/scan'),
         ],
         output='screen',
     )
