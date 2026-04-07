@@ -79,6 +79,7 @@
       <robotNamespace>${mp['namespace']}</robotNamespace>
       <bodyName>base_link</bodyName>
       <pub_odom>true</pub_odom>
+      <pub_tf>false</pub_tf>
       <rollpitchProportionalGain>${mp['rollpitchProportionalGain']}</rollpitchProportionalGain>
       <rollpitchDifferentialGain>${mp['rollpitchDifferentialGain']}</rollpitchDifferentialGain>
       <rollpitchLimit>${mp['rollpitchLimit']}</rollpitchLimit>

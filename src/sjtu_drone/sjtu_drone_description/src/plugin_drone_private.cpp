@@ -372,15 +372,17 @@ void DroneSimpleControllerPrivate::PublishOdom(
 
   pub_odom_->publish(odom);
 
-  // TF broadcast
-  geometry_msgs::msg::TransformStamped tf;
-  tf.header = odom.header;
-  tf.child_frame_id = odom.child_frame_id;
-  tf.transform.translation.x = pose.Pos().X();
-  tf.transform.translation.y = pose.Pos().Y();
-  tf.transform.translation.z = pose.Pos().Z();
-  tf.transform.rotation = odom.pose.pose.orientation;
-  tf_broadcaster_->sendTransform(tf);
+  // TF broadcast (disabled when pub_tf is false)
+  if (pub_tf) {
+    geometry_msgs::msg::TransformStamped tf;
+    tf.header = odom.header;
+    tf.child_frame_id = odom.child_frame_id;
+    tf.transform.translation.x = pose.Pos().X();
+    tf.transform.translation.y = pose.Pos().Y();
+    tf.transform.translation.z = pose.Pos().Z();
+    tf.transform.rotation = odom.pose.pose.orientation;
+    tf_broadcaster_->sendTransform(tf);
+  }
 }
 
 void DroneSimpleControllerPrivate::UpdateState(double dt)

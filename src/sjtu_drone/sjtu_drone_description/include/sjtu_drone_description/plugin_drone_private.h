@@ -105,6 +105,7 @@ public:
   int odom_seq;
   int odom_hz;
   bool pub_odom;
+  bool pub_tf;
 
   // Timing
   double current_time{0.0};

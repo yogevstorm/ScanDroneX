@@ -25,9 +25,10 @@ def generate_launch_description():
                     'laser_scan_topic' : 'simple_drone/scan',
                     'odom_topic' : '/odom_rf2o',
                     'publish_tf' : True,
-                    'base_frame_id' : 'base_link',
+                    'base_frame_id' : 'simple_drone/base_footprint',
                     'odom_frame_id' : 'odom_lidar',
                     'init_pose_from_topic' : '',
-                    'freq' : 20.0}],
+                    'freq' : 20.0,
+                    'use_sim_time' : True}],
             ),
     ])

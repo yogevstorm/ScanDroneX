@@ -120,6 +120,9 @@ void DroneSimpleController::Configure(
   }
   RCLCPP_INFO(impl_->ros_node_->get_logger(), "pub_odom: %d", impl_->pub_odom);
 
+  impl_->pub_tf = !sdf->HasElement("pub_tf") || sdf->GetElement("pub_tf")->Get<bool>();
+  RCLCPP_INFO(impl_->ros_node_->get_logger(), "pub_tf: %d", impl_->pub_tf);
+
   // Read max force
   if (!sdf->HasElement("maxForce")) {
     impl_->max_force_ = -1;

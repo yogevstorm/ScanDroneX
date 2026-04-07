@@ -107,6 +107,10 @@ Visualization Manager:
               Alpha: 1
               Show Axes: false
               Show Trail: false
+            lidar_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
             sonar_link:
               Alpha: 1
               Show Axes: false

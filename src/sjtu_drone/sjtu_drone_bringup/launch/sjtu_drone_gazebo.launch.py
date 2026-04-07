@@ -242,6 +242,17 @@ def generate_launch_description():
         ),
 
         Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz2',
+            arguments=['-d', os.path.join(
+                get_package_share_directory('sjtu_drone_bringup'), 'rviz', 'rviz.rviz'
+            )],
+            parameters=[{'use_sim_time': True}],
+            output='screen',
+        ),
+
+        Node(
             package='joy',
             executable='joy_node',
             name='joy',
