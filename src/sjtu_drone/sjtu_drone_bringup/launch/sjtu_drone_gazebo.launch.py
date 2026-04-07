@@ -21,6 +21,7 @@ from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
     IncludeLaunchDescription,
+    OpaqueFunction,
     SetEnvironmentVariable,
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -42,6 +43,52 @@ def _world_name_from_sdf(world_path):
     return 'default'
 
 
+def _create_bridge(context, model_ns, model_name, link_name):
+    """Create the ros_gz_bridge node with the correct world name from the loaded world file."""
+    world_file = LaunchConfiguration('world').perform(context)
+    world_name = _world_name_from_sdf(world_file)
+    print(f'[sjtu_drone_gazebo] world name: {world_name}')
+
+    def _gz_sensor_topic(sensor, suffix):
+        return (
+            f'/world/{world_name}/model/{model_name}'
+            f'/link/{link_name}/sensor/{sensor}/{suffix}'
+        )
+
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+            _gz_sensor_topic('sensor_imu', 'imu')
+            + '@sensor_msgs/msg/Imu[gz.msgs.IMU',
+            _gz_sensor_topic('front_camera', 'image')
+            + '@sensor_msgs/msg/Image[gz.msgs.Image',
+            _gz_sensor_topic('front_camera', 'camera_info')
+            + '@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
+            _gz_sensor_topic('down_camera', 'image')
+            + '@sensor_msgs/msg/Image[gz.msgs.Image',
+            _gz_sensor_topic('down_camera', 'camera_info')
+            + '@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
+            _gz_sensor_topic('navsat_sensor', 'navsat')
+            + '@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
+            _gz_sensor_topic('sonar', 'scan')
+            + '@sensor_msgs/msg/Range[gz.msgs.LaserScan',
+        ],
+        remappings=[
+            (_gz_sensor_topic('sensor_imu', 'imu'), f'{model_ns}/imu'),
+            (_gz_sensor_topic('front_camera', 'image'), f'{model_ns}/front/image_raw'),
+            (_gz_sensor_topic('front_camera', 'camera_info'), f'{model_ns}/front/camera_info'),
+            (_gz_sensor_topic('down_camera', 'image'), f'{model_ns}/bottom/image_raw'),
+            (_gz_sensor_topic('down_camera', 'camera_info'), f'{model_ns}/bottom/camera_info'),
+            (_gz_sensor_topic('navsat_sensor', 'navsat'), f'{model_ns}/navsat'),
+            (_gz_sensor_topic('sonar', 'scan'), f'{model_ns}/sonar'),
+        ],
+        output='screen',
+    )
+    return [bridge]
+
+
 def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
 
@@ -60,12 +107,14 @@ def generate_launch_description():
     )
     robot_desc = robot_description_config.toxml()
 
-    # get ns from yaml
     model_ns = 'drone'
     with open(yaml_file_path, 'r') as f:
         yaml_dict = yaml.safe_load(f)
         model_ns = yaml_dict['namespace']
     print('namespace: ', model_ns)
+
+    model_name = 'sjtu_drone'
+    link_name = 'base_footprint'
 
     world_file_default = os.path.join(
         get_package_share_directory('sjtu_drone_description'),
@@ -78,12 +127,9 @@ def generate_launch_description():
         description='Full path to world file to load'
     )
 
-    # World name used in gz-transport topic paths – must match <world name="...">
-    # in the SDF world file. Parsed automatically from the world file.
-    world_name = _world_name_from_sdf(world_file_default)
-    model_name = 'sjtu_drone'
-    # Collapsed link name after URDF→SDF fixed-joint merging
-    link_name = 'base_footprint'
+    spawn_x = DeclareLaunchArgument('spawn_x', default_value='0.0', description='Drone spawn X')
+    spawn_y = DeclareLaunchArgument('spawn_y', default_value='0.0', description='Drone spawn Y')
+    spawn_z = DeclareLaunchArgument('spawn_z', default_value='0.3', description='Drone spawn Z')
 
     # --- Environment variables for gz-sim plugin / model discovery ---
     gz_plugin_path = SetEnvironmentVariable(
@@ -122,7 +168,7 @@ def generate_launch_description():
         }.items(),
     )
 
-    # --- Spawn drone via ros_gz_sim create ---
+    # --- Spawn drone ---
     spawn_drone = Node(
         package='ros_gz_sim',
         executable='create',
@@ -131,59 +177,17 @@ def generate_launch_description():
             '-string', robot_desc,
             '-name', model_name,
             '-allow_renaming', 'true',
-            '-x', '0', '-y', '0', '-z', '0.3',
+            '-x', LaunchConfiguration('spawn_x'),
+            '-y', LaunchConfiguration('spawn_y'),
+            '-z', LaunchConfiguration('spawn_z'),
         ],
-    )
-
-    # --- ros_gz_bridge: bridge gz-transport sensor topics to ROS 2 ---
-    def _gz_sensor_topic(sensor, suffix):
-        return (
-            f'/world/{world_name}/model/{model_name}'
-            f'/link/{link_name}/sensor/{sensor}/{suffix}'
-        )
-
-    bridge = Node(
-        package='ros_gz_bridge',
-        executable='parameter_bridge',
-        arguments=[
-            # Clock (required for use_sim_time)
-            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
-            # IMU
-            _gz_sensor_topic('sensor_imu', 'imu')
-            + '@sensor_msgs/msg/Imu[gz.msgs.IMU',
-            # Front camera image
-            _gz_sensor_topic('front_camera', 'image')
-            + '@sensor_msgs/msg/Image[gz.msgs.Image',
-            # Front camera info
-            _gz_sensor_topic('front_camera', 'camera_info')
-            + '@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
-            # Bottom camera image
-            _gz_sensor_topic('down_camera', 'image')
-            + '@sensor_msgs/msg/Image[gz.msgs.Image',
-            # Bottom camera info
-            _gz_sensor_topic('down_camera', 'camera_info')
-            + '@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
-            # NavSat
-            _gz_sensor_topic('navsat_sensor', 'navsat')
-            + '@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
-            # GPU Lidar (sonar)
-            _gz_sensor_topic('sonar', 'scan')
-            + '@sensor_msgs/msg/Range[gz.msgs.LaserScan',
-        ],
-        remappings=[
-            (_gz_sensor_topic('sensor_imu', 'imu'), f'{model_ns}/imu'),
-            (_gz_sensor_topic('front_camera', 'image'), f'{model_ns}/front/image_raw'),
-            (_gz_sensor_topic('front_camera', 'camera_info'), f'{model_ns}/front/camera_info'),
-            (_gz_sensor_topic('down_camera', 'image'), f'{model_ns}/bottom/image_raw'),
-            (_gz_sensor_topic('down_camera', 'camera_info'), f'{model_ns}/bottom/camera_info'),
-            (_gz_sensor_topic('navsat_sensor', 'navsat'), f'{model_ns}/navsat'),
-            (_gz_sensor_topic('sonar', 'scan'), f'{model_ns}/sonar'),
-        ],
-        output='screen',
     )
 
     return LaunchDescription([
         world,
+        spawn_x,
+        spawn_y,
+        spawn_z,
 
         gz_plugin_path,
         gz_resource_path,
@@ -215,12 +219,35 @@ def generate_launch_description():
 
         spawn_drone,
 
-        bridge,
+        # Bridge is created inside OpaqueFunction so it reads the actual world
+        # name from whichever .world file the user passes at launch time.
+        OpaqueFunction(
+            function=_create_bridge,
+            kwargs={
+                'model_ns': model_ns,
+                'model_name': model_name,
+                'link_name': link_name,
+            },
+        ),
 
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             arguments=['0', '0', '0', '0', '0', '0', 'world', f'{model_ns}/odom'],
+            output='screen',
+        ),
+
+        Node(
+            package='joy',
+            executable='joy_node',
+            name='joy',
+            output='screen',
+        ),
+
+        Node(
+            package='joy_teleop_cpp',
+            executable='joy_teleop_node',
+            name='joy_teleop_node',
             output='screen',
         ),
     ])

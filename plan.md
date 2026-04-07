@@ -1,54 +1,21 @@
 # goal
-create drone simulator in gazebo simulator. with lidar sensor on top of it.
-please use the sjtu_drone as the drone model and add a lidar on it.
+I have the sjtu_drone working on ignition gazebo. I wan tit to work in classic gazebo.
 
-## spec
-- ROS 2 Humble + Gazebo Classic 11
-- sjtu_drone model
-- 2D LiDAR flat on top → publishes `/scan` (LaserScan)
-- Empty world
-- Joystick control via `joy` + `teleop_twist_joy`
 
-## setup
 
-### 1. Clone sjtu_drone (ROS 2 fork) into this workspace
-```bash
-cd /home/yogev/Desktop/ScanDroneX
-git clone https://github.com/NovoG93/sjtu_drone.git
-```
-
-### 2. Install dependencies
-```bash
-cd /home/yogev/Desktop/ScanDroneX
-rosdep install --from-paths . --ignore-src -r -y
-sudo apt install ros-humble-joy ros-humble-teleop-twist-joy -y
-```
-
-### 3. Build
-```bash
-colcon build --symlink-install
-source install/setup.bash
-```
-
-### 4. Launch
-```bash
-ros2 launch scandronex_sim scandronex_sim.launch.py
-```
-
-### 5. Check LiDAR topic
-```bash
-ros2 topic echo /scan
-```
-
-### notes
-- Hold **RB (R1)** on joystick to enable movement (dead-man switch)
-- Hold **LB (L1)** for turbo speed
-- If your joystick axis IDs differ, edit `scandronex_sim/config/joy_teleop.yaml`
-- If sjtu_drone uses a different cmd_vel topic, edit the remap in `scandronex_sim/launch/scandronex_sim.launch.py`
 
 ## Q&A
-ROS version: ros2 humble
-LiDAR type: 2D LiDAR
-Output topics: /scan (LaserScan)
-World: empty world
-Flight control: joystick (joy + teleop_twist_joy)
+Why classic Gazebo? Is it specifically for the Building Editor, or are there other reasons (ROS1 compatibility, plugins, performance)?
+a: it specifically for the Building Editor
+
+Which ROS version are you using? ROS2 (Humble/Iron/Jazzy) or ROS1 (Noetic)? Classic Gazebo is the native simulator for ROS1, but can work with ROS2 via gazebo_ros_pkgs.
+a:ros2 jazzy
+
+What's currently broken? When you try to run sjtu_drone in classic Gazebo, does it fail to launch, spawn incorrectly, have broken topics, or something else?
+a: I didnt try it yet
+
+Do you want to keep Ignition Gazebo working too, or fully migrate to classic Gazebo?
+a: I want to keep ignition gazebo
+
+Which version of classic Gazebo do you want to target? (Gazebo 9, 11?)
+a: 11
