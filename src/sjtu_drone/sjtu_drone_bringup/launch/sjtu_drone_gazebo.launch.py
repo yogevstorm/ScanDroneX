@@ -238,6 +238,16 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             arguments=['0', '0', '0', '0', '0', '0', 'world', f'{model_ns}/odom'],
+            parameters=[{'use_sim_time': True}],
+            output='screen',
+        ),
+
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments=['0', '0', '0.1', '0', '0', '0',
+                       f'{model_ns}/lidar_link', 'laser'],
+            parameters=[{'use_sim_time': True}],
             output='screen',
         ),
 

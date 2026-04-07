@@ -10,10 +10,10 @@ slam_toolbox:
     ceres_loss_function: None
 
     # ROS Parameters
-    odom_frame: odom
+    odom_frame: odom_lidar
     map_frame: map
-    base_frame: base_link
-    scan_topic: /scan
+    base_frame: simple_drone/base_footprint
+    scan_topic: simple_drone/scan
     mode: mapping #localization
 
     # if you'd like to immediately start continuing a map at a given pose
