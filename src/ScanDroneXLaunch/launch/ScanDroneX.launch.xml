@@ -1,0 +1,11 @@
+<launch>
+  <!-- slam -->
+  <include file="$(find-pkg-share slam)/launch/slam.launch.py"/>
+
+
+  <!-- lase odometry -->
+  <include file="$(find-pkg-share rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch.py"/>
+
+
+</launch>
+
