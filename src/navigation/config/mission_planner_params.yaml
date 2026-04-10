@@ -1,0 +1,9 @@
+Manager:
+  ros__parameters:
+    # drone kinematics
+    COLLISION_R: 0.5
+    ESP_COLLISION_R: 0.15
+    COLLISION_PNTS: [0.0]
+
+  
+

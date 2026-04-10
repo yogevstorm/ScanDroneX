@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(ScanDroneXLaunch)
+project(navigation_msgs)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -7,14 +7,21 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
 
-
-install(TARGETS 
-  DESTINATION lib/${PROJECT_NAME})
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/WorldPoint.msg"
+  "msg/DistMapMsg.msg"
+  "msg/PathMsg.msg"
+  "msg/DroneState.msg"
+  "msg/LaneCluster.msg"
+  "msg/Lane.msg"
+  DEPENDENCIES nav_msgs std_msgs
+ )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -27,8 +34,6 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
-install(DIRECTORY launch 
-  DESTINATION share/${PROJECT_NAME})
+ament_export_dependencies(rosidl_default_runtime)
 
 ament_package()

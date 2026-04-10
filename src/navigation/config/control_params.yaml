@@ -1,0 +1,32 @@
+ControlNode:
+  ros__parameters:
+    # simulation
+    # STANLEY_CTE: 1.0
+    # MAX_STEER_ANGLE: 0.6
+    # WHEEL_BASE: 0.26
+    # PURE_PERSUIT_LOOKAHEAD_DIS: 2.0
+    # DS: 0.2
+    # MAX_DIS_DRONE_FROM_TRAJ: 0.7
+
+
+    STANLEY_CTE: 0.8
+    MAX_STEER_ANGLE: 0.6
+    WHEEL_BASE: 0.26
+    PURE_PERSUIT_LOOKAHEAD_DIS: 1.5
+    DS: 0.2
+    MAX_DIS_DRONE_FROM_TRAJ: 0.7
+    PURE_PERSUIT_CTE: 1.5
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+

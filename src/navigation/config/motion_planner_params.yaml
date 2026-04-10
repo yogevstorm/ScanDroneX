@@ -1,0 +1,7 @@
+MotionPlanner:
+  ros__parameters:
+    DIS_AHEAD: 3.0
+    DS: 0.05
+    YAW_CLOSEST_IDX_TO_DRONE_WEIGHT: 0.5
+
+

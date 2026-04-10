@@ -1,0 +1,5 @@
+ObstacleMapNode:
+  ros__parameters:
+    MAX_RANGE_LASER_SCAN_FILTER: 4.0
+    SIM_FLAG: true
+
