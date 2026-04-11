@@ -42,13 +42,13 @@ def generate_launch_description():
             output="screen"
         ),
 
-        # Node(
-        #     package='navigation',
-        #     executable='MotionPlannerNode',
-        #     name='MotionPlannerNode',
-        #     parameters=['/home/yogev/Desktop/YNav/src/navigation/config/motion_planner_params.yaml'],
-        #     output="screen"
-        # ),
+        Node(
+            package='navigation',
+            executable='MotionPlannerNode',
+            name='MotionPlannerNode',
+            parameters=['/home/yogev/Desktop/ScanDroneX/src/navigation/config/motion_planner_params.yaml'],
+            output="screen"
+        ),
 
         # Node(
         #     package='navigation',
