@@ -15,8 +15,6 @@ void LocalPlannerNode::InitPublishers()
   m_pub_estop = m_node->create_publisher<std_msgs::msg::Bool>("estop", false);
 
   m_pub_path_vis = m_node->create_publisher<visualization_msgs::msg::MarkerArray>("road_path_vis", 1);
-
-  m_pub_is_unstructured = m_node->create_publisher<std_msgs::msg::Bool>("is_unstructured", false);
 }
 
 void LocalPlannerNode::InitSubscribers()
@@ -44,7 +42,6 @@ void LocalPlannerNode::InitParams()
   m_node->declare_parameter<float>("D_COST", 0.3);
   m_node->declare_parameter<bool>("DO_PREEMPT", true);
   m_node->declare_parameter<float>("TIMEOUT", 0.3);
-  m_node->declare_parameter<float>("UNSTRUCTURED_TIMEOUT", 5.0);
   m_node->declare_parameter<float>("YAWE_COST", 0.3);
   m_node->declare_parameter<float>("YAW_TOLERANCE", 0.3);
   m_node->declare_parameter<float>("MIN_SEGMENT_LEN", 0.5);
@@ -54,11 +51,6 @@ void LocalPlannerNode::InitParams()
   m_node->declare_parameter<float>("REVERSE_MAX_STEER_ANGLE", 25.0);
   m_node->declare_parameter<float>("CLEARANCE_COST", 0.2);
   m_node->declare_parameter<float>("MAX_FORWARD_LEN", 1.0);
-  m_node->declare_parameter<float>("UNSTRUCTURED_COLLISION_R", 0.3);
-  m_node->declare_parameter<float>("UNSTRUCTURED_CLEARANCE_COST", 1.0);
-  m_node->declare_parameter<float>("UNSTRUCTURED_MAX_REVERSE_LEN", 5.0);
-  m_node->declare_parameter<float>("UNSTRUCTURED_HEURISTIC_GAIN", 1.0);
-  m_node->declare_parameter<float>("UNSTRUCTURED_STUCK_IN_UNSTRUCTURED_RELEASE_TIMER", 10.0);
 }
 
 
@@ -76,7 +68,6 @@ void LocalPlannerNode::UpdateParams()
   m_node->get_parameter("D_COST", m_local_planner.m_hybrid_astar.m_d_cost);
   m_node->get_parameter("DO_PREEMPT", m_local_planner.m_hybrid_astar.m_do_preempt);
   m_node->get_parameter("TIMEOUT", m_local_planner.m_hybrid_astar.m_timeout);
-  m_node->get_parameter("UNSTRUCTURED_TIMEOUT", m_local_planner.m_hybrid_astar.m_unstructured_timeout);
   m_node->get_parameter("YAWE_COST", m_local_planner.m_hybrid_astar.m_yawe_cost);
   m_node->get_parameter("CLEARANCE_COST", m_local_planner.m_hybrid_astar.m_clearance_cost);
   m_node->get_parameter("YAW_TOLERANCE", m_local_planner.m_hybrid_astar.m_yaw_tolerance);
@@ -85,12 +76,6 @@ void LocalPlannerNode::UpdateParams()
   m_node->get_parameter("MAX_STEER_ANGLE_DEG", m_local_planner.m_hybrid_astar.m_max_steer_angle);
   m_node->get_parameter("REVERSE_MAX_STEER_ANGLE", m_local_planner.m_hybrid_astar.m_max_reverse_steer_angle);
   m_node->get_parameter("MAX_FORWARD_LEN", m_local_planner.m_hybrid_astar.m_max_forward_len);
-  m_node->get_parameter("UNSTRUCTURED_COLLISION_R", m_local_planner.m_hybrid_astar.m_unstructured_collision_r);
-  m_node->get_parameter("UNSTRUCTURED_CLEARANCE_COST", m_local_planner.m_hybrid_astar.m_unstructured_clearance_cost);
-  m_node->get_parameter("UNSTRUCTURED_MAX_REVERSE_LEN", m_local_planner.m_hybrid_astar.m_max_reverse_len);
-  m_node->get_parameter("UNSTRUCTURED_HEURISTIC_GAIN", m_local_planner.m_hybrid_astar.m_unstructured_heuristic_gain);
-  m_node->get_parameter("UNSTRUCTURED_STUCK_IN_UNSTRUCTURED_RELEASE_TIMER", m_local_planner.m_stuck_in_unstructured_relase_timer);
-  
 }
 
 void LocalPlannerNode::DroneVelCallBack(const std_msgs::msg::Float32::SharedPtr p_msg)
@@ -104,7 +89,7 @@ void LocalPlannerNode::LaneCallBack(const navigation_msgs::msg::Lane::SharedPtr 
 {
   m_lane = *p_msg;
 
-  if(m_lane.clusters.size() < 2 && !m_local_planner.m_is_unstructured)
+  if(m_lane.clusters.size() < 2)
   {
     PubEstop(true);
 
@@ -137,16 +122,6 @@ void LocalPlannerNode::PublishPathMsg()
 
   m_pub_local_path->publish(m_local_planner.m_path);
 }
-
-void LocalPlannerNode::PublishIsUnstructured()
-{
-  std_msgs::msg::Bool is_unstructured_msg;
-
-  is_unstructured_msg.data = m_local_planner.m_is_unstructured;
-
-  m_pub_is_unstructured->publish(is_unstructured_msg);
-}
-
 
 void LocalPlannerNode::PubEstop(bool p_estop)
 {
@@ -182,8 +157,6 @@ void LocalPlannerNode::RunLocalPlanner()
   PubEstop(m_local_planner.m_estop);
 
   PublishPathMsg();
-
-  PublishIsUnstructured();
 
   VisualizePath(m_local_planner.m_path);
 }

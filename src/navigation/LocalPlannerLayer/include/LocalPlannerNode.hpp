@@ -48,9 +48,6 @@ class LocalPlannerNode
 
     void VisualizePath(navigation_msgs::msg::PathMsg path);
 
-    void PublishIsUnstructured();
-
-
     ControlUtils m_control_utils;
 
     LocalPlanner m_local_planner;
@@ -58,8 +55,6 @@ class LocalPlannerNode
     rclcpp::Publisher<navigation_msgs::msg::PathMsg>::SharedPtr m_pub_local_path;
 
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_estop;
-
-    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_is_unstructured;
 
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr m_pub_path_vis;
 

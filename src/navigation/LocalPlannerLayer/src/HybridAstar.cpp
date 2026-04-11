@@ -58,12 +58,6 @@ bool HybridAstar::IsDestination(Node p_node)
 
 float HybridAstar::GetHeuristic(Node p_node)
 {
-  if(m_is_unstructured)
-  {
-    int node_ind = m_dist_mapobj.World2Map1D(m_dist_map.info, p_node.wpoint);
-    return m_costmap[node_ind];
-  }
-
   float goal_s = std::min((m_end_node.wpoint.s), (m_lane.clusters.back().s));
 
   return (abs(goal_s - p_node.wpoint.s));
@@ -94,72 +88,6 @@ void HybridAstar::NeighborsNode(std::vector<Node>& p_neighbors, nav_msgs::msg::M
 }
 
 
-void HybridAstar::UnstructuredNeighborsNode(std::vector<Node>& p_neighbors, nav_msgs::msg::MapMetaData p_map_info, Node p_parent_node,
-  int p_num_neighbors, double p_max_steer, double p_max_reverse_steer, float p_ds){
-
-  float s = 0.0; float d = 0.0;
-
-  for(int i=-p_num_neighbors/2; i<=p_num_neighbors/2; i++)
-  {
-    Node rev_neighbor = KinematicStep(p_parent_node, (i/(p_num_neighbors/2.0))*p_max_reverse_steer, p_ds, true);
-    std::tie(s, d) = m_control_utils.Cartesian2Curvlinear(m_lane, rev_neighbor.wpoint.x, rev_neighbor.wpoint.y);
-    rev_neighbor.wpoint.s = s; rev_neighbor.wpoint.d = d; 
-    int map_cell_id = m_dist_mapobj.World2Map1D(p_map_info, rev_neighbor.wpoint); 
-    float clearance = m_dist_map.data[map_cell_id];
-    rev_neighbor.g = p_parent_node.g + p_ds;
-    rev_neighbor.h = m_unstructured_heuristic_gain*GetHeuristic(rev_neighbor);
-    rev_neighbor.f = rev_neighbor.g + rev_neighbor.h;
-    rev_neighbor.f = rev_neighbor.f * (1 + m_k_reverse_cost);
-    rev_neighbor.f = rev_neighbor.f*(1 + m_unstructured_clearance_cost*abs(1/(clearance + 0.001f)));
-    rev_neighbor.parent_ind = p_parent_node.ind;
-    rev_neighbor.ind = FlatIndex(m_dist_map.info, rev_neighbor.wpoint);
-    
-    if(p_parent_node.wpoint.gear == 1)
-    {
-      rev_neighbor.segment_len = p_ds;
-      if(p_parent_node.segment_len > m_min_segment_len && p_parent_node.segments_num <= m_max_segments_num)
-      {
-        rev_neighbor.segments_num = p_parent_node.segments_num + 1;
-        p_neighbors.push_back(rev_neighbor);
-      }
-    }
-
-    else
-    {
-      rev_neighbor.segments_num = p_parent_node.segments_num;
-      rev_neighbor.segment_len = p_parent_node.segment_len + p_ds;
-      if(p_parent_node.segment_len < m_max_reverse_len) p_neighbors.push_back(rev_neighbor);
-    }
-  
-    
-    Node neighbor = KinematicStep(p_parent_node, (i/(p_num_neighbors/2.0))*p_max_steer, p_ds, false);
-    std::tie(s, d) = m_control_utils.Cartesian2Curvlinear(m_lane, neighbor.wpoint.x, neighbor.wpoint.y);
-    neighbor.wpoint.s = s; neighbor.wpoint.d = d; 
-    neighbor.g = p_parent_node.g + p_ds;
-    neighbor.h = m_unstructured_heuristic_gain*GetHeuristic(neighbor);
-    neighbor.f = neighbor.g + neighbor.h;
-    neighbor.parent_ind = p_parent_node.ind;
-    neighbor.ind = FlatIndex(m_dist_map.info, neighbor.wpoint);
-
-    if(p_parent_node.wpoint.gear == -1)
-    {
-      neighbor.segment_len = p_ds;
-      if(p_parent_node.segment_len > m_min_segment_len && p_parent_node.segments_num <= m_max_segments_num)
-      {
-        neighbor.segments_num = p_parent_node.segments_num + 1;
-        p_neighbors.push_back(neighbor);
-      }
-    }
-
-    else
-    {
-      neighbor.segments_num = p_parent_node.segments_num;
-      neighbor.segment_len = p_parent_node.segment_len + p_ds;
-      if(p_parent_node.segment_len < m_max_forward_len) p_neighbors.push_back(neighbor);
-    }
-  }
-}
-  
 
 
 bool HybridAstar::IsNodeOutOfBounds(Node p_node)
@@ -176,11 +104,7 @@ bool HybridAstar::IsNodeCollide(Node p_node)
 {
   float yaw = p_node.wpoint.yaw;
   float collision_r = m_collision_r;
-  if(m_is_unstructured)
-  {
-    collision_r = m_unstructured_collision_r;
-  }
-  
+
   for(size_t i = 0; i < m_collision_pnts.size(); i++)
   {
     navigation_msgs::msg::WorldPoint collision_pnt;
@@ -213,23 +137,11 @@ void HybridAstar::DeleteInvalidNeighbors(std::vector<Node>& p_neighbors)
 
   for(int i = 0; i < p_neighbors.size(); i++)
   {
-    if(!m_is_unstructured)
+    if(!(IsNodeOutOfBounds(p_neighbors[i])
+    || IsNodeCollide(p_neighbors[i])
+    || IsNodeOutOfLane(p_neighbors[i])))
     {
-      if(!(IsNodeOutOfBounds(p_neighbors[i])
-      || IsNodeCollide(p_neighbors[i])
-      || IsNodeOutOfLane(p_neighbors[i])))
-      {
-        selected_neighbors.push_back(p_neighbors[i]);
-      }
-    }
-
-    else
-    {
-      if(!(IsNodeOutOfBounds(p_neighbors[i])
-      || IsNodeCollide(p_neighbors[i])))
-      {
-        selected_neighbors.push_back(p_neighbors[i]);
-      }
+      selected_neighbors.push_back(p_neighbors[i]);
     }
   }
   p_neighbors = selected_neighbors;
@@ -291,16 +203,14 @@ int HybridAstar::FlatIndex(nav_msgs::msg::MapMetaData p_map_info, navigation_msg
 
 
 void HybridAstar::Init(navigation_msgs::msg::DistMapMsg p_dist_map, navigation_msgs::msg::WorldPoint p_start,
-   navigation_msgs::msg::Lane p_lane, bool p_is_unstructured, std::vector<float> p_costmap)
+   navigation_msgs::msg::Lane p_lane)
 {
   m_dist_map = p_dist_map;
-  m_costmap = p_costmap;
   m_lane = p_lane;
   m_start_node.wpoint = p_start;
   m_end_node.wpoint.x = p_lane.clusters.back().x; m_end_node.wpoint.y = p_lane.clusters.back().y;
   m_end_node.wpoint.yaw = p_lane.clusters.back().yaw; m_end_node.wpoint.s = p_lane.clusters.back().s;
-  m_start_node.ind = FlatIndex(p_dist_map.info, m_start_node.wpoint); 
-  m_is_unstructured = p_is_unstructured;
+  m_start_node.ind = FlatIndex(p_dist_map.info, m_start_node.wpoint);
   m_start_node.wpoint.gear = 0;
 }
 
@@ -314,18 +224,13 @@ navigation_msgs::msg::PathMsg HybridAstar::PreemptedPath(Node &p_node, std::map<
 
 
 navigation_msgs::msg::PathMsg HybridAstar::Search(navigation_msgs::msg::DistMapMsg p_dist_map, navigation_msgs::msg::WorldPoint p_start,
-   navigation_msgs::msg::Lane p_lane, bool p_is_unstructured, std::vector<float> p_costmap){
+   navigation_msgs::msg::Lane p_lane){
 
   // Create start and end nodes
   Node current_node, best_node;
   //Create neighbors
-  Init(p_dist_map, p_start, p_lane, p_is_unstructured, p_costmap);
+  Init(p_dist_map, p_start, p_lane);
   float timeout = m_timeout;
-  if(m_is_unstructured)
-  {
-    m_do_preempt = false;
-    timeout = m_unstructured_timeout;
-  }
   best_node = m_start_node;
   //Initialize both open and closed list
   int64 start_t = cv::getTickCount();
@@ -363,15 +268,7 @@ navigation_msgs::msg::PathMsg HybridAstar::Search(navigation_msgs::msg::DistMapM
       return m_path;}
       
     // Loop through neighbors
-    if(m_is_unstructured)
-    {
-      UnstructuredNeighborsNode(neighbors, p_dist_map.info, current_node ,3, m_max_steer_angle * (M_PI/180.0), m_max_reverse_steer_angle * (M_PI/180.0), m_ds);
-    }
-
-    else
-    {
-      NeighborsNode(neighbors, p_dist_map.info, current_node ,7, m_max_steer_angle * (M_PI/180.0), m_ds);
-    }
+    NeighborsNode(neighbors, p_dist_map.info, current_node ,7, m_max_steer_angle * (M_PI/180.0), m_ds);
     
     DeleteInvalidNeighbors(neighbors);
 

@@ -35,7 +35,7 @@ include_directories(
   Localization/include
   ObstacleMap/include
   BehaviorLayer/include
-  # LocalPlannerLayer/include
+  LocalPlannerLayer/include
   # MotionPlannerLayer/include
   # ControlLayer/include
   ${EIGEN3_INCLUDE_DIR}
@@ -63,11 +63,11 @@ add_library(${behavior_layer_lib} SHARED
   BehaviorLayer/src/BehaviorPlanner.cpp
 )
 
-# set(local_planner_layer_lib "LocalPlannerLayer")
-# add_library(${local_planner_layer_lib} SHARED
-#   LocalPlannerLayer/src/LocalPlanner.cpp
-#   LocalPlannerLayer/src/HybridAstar
-# )
+set(local_planner_layer_lib "LocalPlannerLayer")
+add_library(${local_planner_layer_lib} SHARED
+  LocalPlannerLayer/src/LocalPlanner.cpp
+  LocalPlannerLayer/src/HybridAstar.cpp
+)
 
 # set(motion_planner_layer_lib "MotionPlannerLayer")
 # add_library(${motion_planner_layer_lib} SHARED
@@ -87,7 +87,7 @@ ament_target_dependencies(${obstacle_map_lib} ${dependencies})
 target_link_libraries(${obstacle_map_lib} ${utils_lib})
 ament_target_dependencies(${mission_layer_lib} ${dependencies})
 ament_target_dependencies(${behavior_layer_lib} ${dependencies})
-# ament_target_dependencies(${local_planner_layer_lib} ${dependencies})
+ament_target_dependencies(${local_planner_layer_lib} ${dependencies})
 # ament_target_dependencies(${motion_planner_layer_lib} ${dependencies})
 # ament_target_dependencies(${control_layer_lib} ${dependencies})
 # target_link_libraries(${control_layer_lib} ${utils_lib})
@@ -108,9 +108,9 @@ add_executable(BehaviorNode BehaviorLayer/src/BehaviorNode.cpp ${utils_lib} ${be
 ament_target_dependencies(BehaviorNode  ${dependencies})
 target_link_libraries(BehaviorNode ${utils_lib} ${behavior_layer_lib})
 
-# add_executable(LocalPlannerNode LocalPlannerLayer/src/LocalPlannerNode.cpp ${utils_lib} ${local_planner_layer_lib})
-# ament_target_dependencies(LocalPlannerNode  ${dependencies})
-# target_link_libraries(LocalPlannerNode ${utils_lib} ${local_planner_layer_lib})
+add_executable(LocalPlannerNode LocalPlannerLayer/src/LocalPlannerNode.cpp ${utils_lib} ${local_planner_layer_lib})
+ament_target_dependencies(LocalPlannerNode  ${dependencies})
+target_link_libraries(LocalPlannerNode ${utils_lib} ${local_planner_layer_lib})
 
 # add_executable(MotionPlannerNode MotionPlannerLayer/src/MotionPlannerNode.cpp ${utils_lib} ${motion_planner_layer_lib})
 # ament_target_dependencies(MotionPlannerNode  ${dependencies})
@@ -128,7 +128,7 @@ install(TARGETS
   ObstacleMapNode
   MissionPathNode
   BehaviorNode
-  # LocalPlannerNode
+  LocalPlannerNode
   # MotionPlannerNode
   # ControlNode
   DESTINATION  lib/${PROJECT_NAME})

@@ -31,10 +31,6 @@ class LocalPlanner
 
     bool m_estop = false;
 
-    bool m_is_unstructured = false;
-
-    float m_stuck_in_unstructured_relase_timer = 10.0;
-
     navigation_msgs::msg::PathMsg m_path;
 
 
@@ -43,19 +39,7 @@ class LocalPlanner
     void Init(navigation_msgs::msg::Lane p_lane, navigation_msgs::msg::DistMapMsg p_dist_map,
       navigation_msgs::msg::DroneState p_drone_state, float p_drone_vel);
 
-    void IsUnStructuredPlanning();
-
     void StructuredPlanning();
-
-    void UnStructuredPlanning();
-
-    void SetPathSegment();
-
-    void PauseBetweenSegments();
-
-    void StuckInUnstructuredRelease();
-
-    void CreatePathSegments();
 
     navigation_msgs::msg::WorldPoint InitStartNode(navigation_msgs::msg::DroneState p_drone_state);
 
@@ -64,8 +48,6 @@ class LocalPlanner
     ControlUtils m_control_utils;
 
     DistMap m_dist_map_obj;
-
-    navigation_msgs::msg::PathMsg m_path_unstructured;
 
     navigation_msgs::msg::Lane m_lane;
 
@@ -76,14 +58,6 @@ class LocalPlanner
     navigation_msgs::msg::WorldPoint m_start_wpoint;
 
     float m_drone_vel = 0.0;
-
-    std::vector<navigation_msgs::msg::PathMsg> m_path_segments;
-
-    rclcpp::Time m_start_time;
-
-    rclcpp::Time m_stuck_in_unstructured_start_time;
-
-    std::vector<float> m_costmap;
 
     int m_planning_failers_counter = 0;
 

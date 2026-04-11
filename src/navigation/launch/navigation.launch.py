@@ -34,13 +34,13 @@ def generate_launch_description():
             output="screen"
         ),
 
-        # Node(
-        #     package='navigation',
-        #     executable='LocalPlannerNode',
-        #     name='LocalPlannerNode',
-        #     parameters=['/home/yogev/Desktop/YNav/src/navigation/config/local_planner_params.yaml'],
-        #     output="screen"
-        # ),
+        Node(
+            package='navigation',
+            executable='LocalPlannerNode',
+            name='LocalPlannerNode',
+            parameters=['/home/yogev/Desktop/ScanDroneX/src/navigation/config/local_planner_params.yaml'],
+            output="screen"
+        ),
 
         # Node(
         #     package='navigation',
