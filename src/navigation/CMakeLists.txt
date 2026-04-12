@@ -37,7 +37,7 @@ include_directories(
   BehaviorLayer/include
   LocalPlannerLayer/include
   MotionPlannerLayer/include
-  # ControlLayer/include
+  ControlLayer/include
   ${EIGEN3_INCLUDE_DIR}
 )
 
@@ -74,10 +74,10 @@ add_library(${motion_planner_layer_lib} SHARED
   MotionPlannerLayer/src/MotionPlanner.cpp
 )
 
-# set(control_layer_lib "ControlLayer")
-# add_library(${control_layer_lib} SHARED
-#   ControlLayer/src/Control.cpp
-# )
+set(control_layer_lib "ControlLayer")
+add_library(${control_layer_lib} SHARED
+  ControlLayer/src/Control.cpp
+)
 
 
 
@@ -89,8 +89,8 @@ ament_target_dependencies(${mission_layer_lib} ${dependencies})
 ament_target_dependencies(${behavior_layer_lib} ${dependencies})
 ament_target_dependencies(${local_planner_layer_lib} ${dependencies})
 ament_target_dependencies(${motion_planner_layer_lib} ${dependencies})
-# ament_target_dependencies(${control_layer_lib} ${dependencies})
-# target_link_libraries(${control_layer_lib} ${utils_lib})
+ament_target_dependencies(${control_layer_lib} ${dependencies})
+target_link_libraries(${control_layer_lib} ${utils_lib})
 
 add_executable(ObstacleMapNode ObstacleMap/src/ObstacleMapNode.cpp ${utils_lib} ${obstacle_map_lib})
 ament_target_dependencies(ObstacleMapNode  ${dependencies})
@@ -116,9 +116,9 @@ add_executable(MotionPlannerNode MotionPlannerLayer/src/MotionPlannerNode.cpp ${
 ament_target_dependencies(MotionPlannerNode  ${dependencies})
 target_link_libraries(MotionPlannerNode ${utils_lib} ${motion_planner_layer_lib})
 
-# add_executable(ControlNode ControlLayer/src/ControlNode.cpp ${utils_lib} ${control_layer_lib})
-# ament_target_dependencies(ControlNode  ${dependencies})
-# target_link_libraries(ControlNode ${utils_lib} ${control_layer_lib})
+add_executable(ControlNode ControlLayer/src/ControlNode.cpp ${utils_lib} ${control_layer_lib})
+ament_target_dependencies(ControlNode  ${dependencies})
+target_link_libraries(ControlNode ${utils_lib} ${control_layer_lib})
 
 
 
@@ -130,7 +130,7 @@ install(TARGETS
   BehaviorNode
   LocalPlannerNode
   MotionPlannerNode
-  # ControlNode
+  ControlNode
   DESTINATION  lib/${PROJECT_NAME})
 
 install(DIRECTORY launch config

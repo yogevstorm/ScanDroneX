@@ -50,11 +50,11 @@ def generate_launch_description():
             output="screen"
         ),
 
-        # Node(
-        #     package='navigation',
-        #     executable='ControlNode',
-        #     name='ControlNode',
-        #     parameters=['/home/yogev/Desktop/YNav/src/navigation/config/control_params.yaml'],
-        #     output="screen"
-        # ),
+        Node(
+            package='navigation',
+            executable='ControlNode',
+            name='ControlNode',
+            parameters=['/home/yogev/Desktop/YNav/src/navigation/config/control_params.yaml'],
+            output="screen"
+        ),
     ])
