@@ -28,7 +28,7 @@ void ControlNode::UpdateParams()
 
 void ControlNode::Init_Publishers_Subscribers()
 {
-  m_pub_cmd = m_node->create_publisher<ackermann_msgs::msg::AckermannDrive>("/simple_drone/cmd_vel", 1);
+  m_pub_cmd = m_node->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 1);
   m_sub_estop = m_node->create_subscription<std_msgs::msg::Bool>(
     "estop", 1, std::bind(&ControlNode::EstopCallBack, this, std::placeholders::_1)
   );
@@ -96,9 +96,9 @@ void ControlNode::TrajectoryCallBack(const navigation_msgs::msg::PathMsg::Shared
   if(m_is_recieved_state_msg)
   {
     std::vector<float> cmd = m_control.GetCmd(m_drone_state, m_trajectory);
-    ackermann_msgs::msg::AckermannDrive cmd_msg;
-    cmd_msg.steering_angle = -cmd[1];
-    cmd_msg.speed = cmd[0];
+    geometry_msgs::msg::Twist cmd_msg;
+    cmd_msg.linear.x  = cmd[0];
+    cmd_msg.angular.z = -cmd[1];
     m_pub_cmd->publish(cmd_msg);
   }
 
@@ -106,10 +106,7 @@ void ControlNode::TrajectoryCallBack(const navigation_msgs::msg::PathMsg::Shared
 
 void ControlNode::Estop()
 {
-  ackermann_msgs::msg::AckermannDrive cmd_msg;
-  cmd_msg.steering_angle = 0.0;
-  cmd_msg.speed = 0.0;
-  m_pub_cmd->publish(cmd_msg);
+  m_pub_cmd->publish(geometry_msgs::msg::Twist());
 }
 
 bool ControlNode::IsDroneFarFromTraj()

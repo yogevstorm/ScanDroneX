@@ -11,7 +11,7 @@
 #include "navigation_msgs/msg/dist_map_msg.hpp"
 #include "navigation_msgs/msg/path_msg.hpp"
 #include "navigation_msgs/msg/drone_state.hpp"
-#include <ackermann_msgs/msg/ackermann_drive.hpp>
+#include <geometry_msgs/msg/twist.hpp>
 #include "Control.hpp"
 #include <memory>
 #include <map>
@@ -41,7 +41,7 @@ private:
   void EstopCallBack(const std_msgs::msg::Bool::SharedPtr msg);
   bool IsDroneFarFromTraj();
 
-  rclcpp::Publisher<ackermann_msgs::msg::AckermannDrive>::SharedPtr m_pub_cmd;
+  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr m_pub_cmd;
   rclcpp::Subscription<navigation_msgs::msg::PathMsg>::SharedPtr m_sub_path;
   rclcpp::Subscription<navigation_msgs::msg::DroneState>::SharedPtr m_sub_state;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop;
