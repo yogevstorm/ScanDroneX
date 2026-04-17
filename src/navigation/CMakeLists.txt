@@ -38,6 +38,7 @@ include_directories(
   LocalPlannerLayer/include
   MotionPlannerLayer/include
   ControlLayer/include
+  ScanLayer/include
   ${EIGEN3_INCLUDE_DIR}
 )
 
@@ -79,6 +80,11 @@ add_library(${control_layer_lib} SHARED
   ControlLayer/src/Control.cpp
 )
 
+set(scan_layer_lib "ScanLayer")
+add_library(${scan_layer_lib} SHARED
+  ScanLayer/src/ScanLayer.cpp
+)
+
 
 
 # Tell CMake that utils_lib depends on rclcpp (and std_msgs)
@@ -91,6 +97,8 @@ ament_target_dependencies(${local_planner_layer_lib} ${dependencies})
 ament_target_dependencies(${motion_planner_layer_lib} ${dependencies})
 ament_target_dependencies(${control_layer_lib} ${dependencies})
 target_link_libraries(${control_layer_lib} ${utils_lib})
+
+ament_target_dependencies(${scan_layer_lib} ${dependencies})
 
 add_executable(ObstacleMapNode ObstacleMap/src/ObstacleMapNode.cpp ${utils_lib} ${obstacle_map_lib})
 ament_target_dependencies(ObstacleMapNode  ${dependencies})
@@ -120,6 +128,10 @@ add_executable(ControlNode ControlLayer/src/ControlNode.cpp ${utils_lib} ${contr
 ament_target_dependencies(ControlNode  ${dependencies})
 target_link_libraries(ControlNode ${utils_lib} ${control_layer_lib})
 
+add_executable(ScanNode ScanLayer/src/ScanNode.cpp)
+ament_target_dependencies(ScanNode ${dependencies})
+target_link_libraries(ScanNode ${scan_layer_lib})
+
 
 
 
@@ -131,6 +143,7 @@ install(TARGETS
   LocalPlannerNode
   MotionPlannerNode
   ControlNode
+  ScanNode
   DESTINATION  lib/${PROJECT_NAME})
 
 install(DIRECTORY launch config

@@ -26,6 +26,8 @@ void MissionPathNode::Init_Publishers_Subscribers()
 
   m_pub_estop = m_node->create_publisher<std_msgs::msg::Bool>("estop", 1);
 
+  m_pub_is_destination = m_node->create_publisher<std_msgs::msg::Bool>("is_destination", 1);
+
   m_pub_drone_vel = m_node->create_publisher<std_msgs::msg::Float32>("drone_vel", 1);
 }
 
@@ -227,6 +229,10 @@ int main(int argc, char * argv[])
   {
     MissionPathNode.UpdateParams();
     MissionPathNode.CollisionRViz();
+
+    std_msgs::msg::Bool dest_msg;
+    dest_msg.data = MissionPathNode.IsDestination();
+    MissionPathNode.m_pub_is_destination->publish(dest_msg);
 
     if(MissionPathNode.IsDestination())
     {

@@ -23,6 +23,8 @@ class BehaviorPlanner
 
     navigation_msgs::msg::Lane m_lane;
 
+    bool m_is_path_blocked = false;
+
     float m_d_max_param = 1.0;
 
     float m_dd_param = 0.1;

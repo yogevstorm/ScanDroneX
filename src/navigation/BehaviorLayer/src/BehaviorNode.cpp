@@ -14,6 +14,8 @@ void BehaviorNode::InitPublishers()
   m_pub_lane = m_node->create_publisher<navigation_msgs::msg::Lane>("lane", 1);
 
   m_pub_drone_state = m_node->create_publisher<navigation_msgs::msg::DroneState>("drone_state", 1);
+
+  m_pub_is_path_blocked = m_node->create_publisher<std_msgs::msg::Bool>("is_path_blocked", 1);
 }
 
 void BehaviorNode::InitSubscribers()
@@ -92,6 +94,10 @@ void BehaviorNode::RunBehaviorPlanner()
   m_behavior_planner.RunBehaviorPlanner(m_mission_path, m_dist_map, m_drone_state);
 
   m_pub_lane->publish(m_behavior_planner.m_lane);
+
+  std_msgs::msg::Bool blocked_msg;
+  blocked_msg.data = m_behavior_planner.m_is_path_blocked;
+  m_pub_is_path_blocked->publish(blocked_msg);
 
   VisLane();
 }

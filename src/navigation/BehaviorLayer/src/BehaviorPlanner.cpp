@@ -153,6 +153,7 @@ void BehaviorPlanner::SearchLane()
 
         if(current_node.lane_idx == end_lane_idx - 1){
             //  Found the goal
+            m_is_path_blocked = false;
             BackTrackNodes(current_node, closed_list);
             return;
         }
@@ -164,6 +165,7 @@ void BehaviorPlanner::SearchLane()
         AppendNeighborsToOpenList(open_list, closed_list, neighbors);
     }
 
+    m_is_path_blocked = true;
     FindBlockedEndNode(best_node, closed_list);
 
     BackTrackNodes(best_node, closed_list);

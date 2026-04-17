@@ -57,4 +57,11 @@ def generate_launch_description():
             parameters=['/home/yogev/Desktop/ScanDroneX/src/navigation/config/control_params.yaml'],
             output="screen"
         ),
+
+        Node(
+            package='navigation',
+            executable='ScanNode',
+            name='ScanNode',
+            output="screen"
+        ),
     ])

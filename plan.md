@@ -1,21 +1,25 @@
-# goal
-I have the sjtu_drone working on ignition gazebo. I wan tit to work in classic gazebo.
+# Goal
 
+I want to add autonomous scanning functionality. To do this, I want to create a new layer in the navigation package called ScanLayer, following a structure similar to the existing layers.
 
+## Step 1
 
+Create a node for this layer called ScanNode.cpp.
 
-## Q&A
-Why classic Gazebo? Is it specifically for the Building Editor, or are there other reasons (ROS1 compatibility, plugins, performance)?
-a: it specifically for the Building Editor
+ScanNode.cpp should publish a /goal_pose that points to a location in the unknown area of the map — that is, a green pixel with a value of -1.
 
-Which ROS version are you using? ROS2 (Humble/Iron/Jazzy) or ROS1 (Noetic)? Classic Gazebo is the native simulator for ROS1, but can work with ROS2 via gazebo_ros_pkgs.
-a:ros2 jazzy
+## Step 2
 
-What's currently broken? When you try to run sjtu_drone in classic Gazebo, does it fail to launch, spawn incorrectly, have broken topics, or something else?
-a: I didnt try it yet
+The drone should move toward the published goal pose. However, the path may become blocked because the map is being built dynamically.
 
-Do you want to keep Ignition Gazebo working too, or fully migrate to classic Gazebo?
-a: I want to keep ignition gazebo
+When the path is blocked, ScanNode should publish the same /goal_pose again, and continue doing so repeatedly until the path becomes available.
 
-Which version of classic Gazebo do you want to target? (Gazebo 9, 11?)
-a: 11
+To detect whether the path is blocked, use the function FindBlockedEndNode from BehaviorPlanner.cpp.
+
+It may also be useful to publish an additional indication of whether the path is currently blocked or not.
+
+If you want, I can also turn this into:
+
+a more technical design note
+a GitHub/Jira task
+a developer-ready implementation spec

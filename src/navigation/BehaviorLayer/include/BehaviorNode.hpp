@@ -3,6 +3,7 @@
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <std_msgs/msg/int8.hpp>
+#include <std_msgs/msg/bool.hpp>
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <visualization_msgs/msg/marker.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
@@ -66,6 +67,8 @@ class BehaviorNode
     rclcpp::Publisher<navigation_msgs::msg::Lane>::SharedPtr m_pub_lane;
 
     rclcpp::Publisher<navigation_msgs::msg::DroneState>::SharedPtr m_pub_drone_state;
+
+    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_is_path_blocked;
 
     rclcpp::Subscription<navigation_msgs::msg::PathMsg>::SharedPtr m_sub_mission_path;
 
