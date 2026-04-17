@@ -54,7 +54,7 @@ def generate_launch_description():
             package='navigation',
             executable='ControlNode',
             name='ControlNode',
-            parameters=['/home/yogev/Desktop/YNav/src/navigation/config/control_params.yaml'],
+            parameters=['/home/yogev/Desktop/ScanDroneX/src/navigation/config/control_params.yaml'],
             output="screen"
         ),
     ])

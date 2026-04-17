@@ -5,7 +5,7 @@ void ControlNode::InitParams()
 {
   m_node->declare_parameter<float>("MAX_STEER_ANGLE", 0.523);
   m_node->declare_parameter<float>("WHEEL_BASE", 0.26);
-  m_node->declare_parameter<float>("LOOKAHEAD_DIS", 1.3);
+  m_node->declare_parameter<float>("LOOKAHEAD_DIS", 1.0);
   m_node->declare_parameter<float>("DS", 0.2);
   m_node->declare_parameter<float>("MAX_DIS_CAR_FROM_TRAJ", 5.0);
   m_node->declare_parameter<float>("V_MAX", 0.8);
@@ -98,7 +98,7 @@ void ControlNode::TrajectoryCallBack(const navigation_msgs::msg::PathMsg::Shared
     std::vector<float> cmd = m_control.GetCmd(m_drone_state, m_trajectory);
     geometry_msgs::msg::Twist cmd_msg;
     cmd_msg.linear.x  = cmd[0];
-    cmd_msg.angular.z = -cmd[1];
+    cmd_msg.angular.z = cmd[1];
     m_pub_cmd->publish(cmd_msg);
   }
 

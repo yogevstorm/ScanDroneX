@@ -1,0 +1,48 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+    {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Debug with Pretty Printing",
+                "type": "cppdbg",
+                "request": "launch",
+                "program": "${workspaceFolder}/your_executable",
+                "args": [],
+                "stopAtEntry": false,
+                "cwd": "${workspaceFolder}",
+                "environment": [],
+                "externalConsole": true,
+                "MIMode": "gdb",
+                "setupCommands": [
+                    {
+                        "description": "Enable pretty-printing",
+                        "text": "-enable-pretty-printing",
+                        "ignoreFailures": true
+                    }
+                ]
+            }
+        ]
+    },
+        
+
+    {
+        "name": "BehaviorNode_debug",
+        "request": "launch",
+        "type": "cppdbg",
+        "miDebuggerServerAddress": "localhost:3000",
+        "cwd": "${workspaceRoot}",
+        "program": "/home/yogev/Desktop/ScanDroneX/install/navigation/lib/navigation/BehaviorNode"
+    },
+
+    {
+        "name": "ControlNode_debug",
+        "request": "launch",
+        "type": "cppdbg",
+        "miDebuggerServerAddress": "localhost:3000",
+        "cwd": "${workspaceRoot}",
+        "program": "/home/yogev/Desktop/ScanDroneX/install/navigation/lib/navigation/ControlNode"
+    },
+]}
