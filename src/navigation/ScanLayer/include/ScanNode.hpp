@@ -34,6 +34,7 @@ private:
   rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_estop;
   rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr m_sub_map;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_is_destination;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_lane_end;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_is_path_blocked;
 
 protected:

@@ -12,6 +12,9 @@ void ScanNode::Init()
   m_sub_is_destination = m_node->create_subscription<std_msgs::msg::Bool>(
       "is_destination", 1, std::bind(&ScanNode::IsDestinationCallBack, this, std::placeholders::_1));
 
+  m_sub_lane_end = m_node->create_subscription<std_msgs::msg::Bool>(
+      "lane_end", 1, std::bind(&ScanNode::IsDestinationCallBack, this, std::placeholders::_1));
+
   m_sub_is_path_blocked = m_node->create_subscription<std_msgs::msg::Bool>(
       "is_path_blocked", 1, std::bind(&ScanNode::IsPathBlockedCallBack, this, std::placeholders::_1));
 }

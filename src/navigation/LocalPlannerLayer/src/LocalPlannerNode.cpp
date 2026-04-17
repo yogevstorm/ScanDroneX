@@ -10,11 +10,10 @@ void LocalPlannerNode::Init()
 
 void LocalPlannerNode::InitPublishers()
 {
-  m_pub_local_path = m_node->create_publisher<navigation_msgs::msg::PathMsg>("local_path", 1);
-
-  m_pub_estop = m_node->create_publisher<std_msgs::msg::Bool>("estop", false);
-
-  m_pub_path_vis = m_node->create_publisher<visualization_msgs::msg::MarkerArray>("road_path_vis", 1);
+  m_pub_local_path       = m_node->create_publisher<navigation_msgs::msg::PathMsg>("local_path", 1);
+  m_pub_estop            = m_node->create_publisher<std_msgs::msg::Bool>("estop", false);
+  m_pub_path_vis         = m_node->create_publisher<visualization_msgs::msg::MarkerArray>("road_path_vis", 1);
+  m_pub_is_destination   = m_node->create_publisher<std_msgs::msg::Bool>("lane_end", 1);
 }
 
 void LocalPlannerNode::InitSubscribers()
@@ -93,11 +92,20 @@ void LocalPlannerNode::LaneCallBack(const navigation_msgs::msg::Lane::SharedPtr 
   {
     PubEstop(true);
 
+    if(!m_lane_end_triggered)
+    {
+      std_msgs::msg::Bool dest_msg;
+      dest_msg.data = true;
+      m_pub_is_destination->publish(dest_msg);
+      m_lane_end_triggered = true;
+    }
+
     m_is_recieved_lane = false;
 
     return;
   }
 
+  m_lane_end_triggered = false;
   m_is_recieved_lane = true;
 }
 

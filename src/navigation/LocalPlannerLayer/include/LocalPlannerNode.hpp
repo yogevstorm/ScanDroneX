@@ -56,6 +56,8 @@ class LocalPlannerNode
 
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_estop;
 
+    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_is_destination;
+
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr m_pub_path_vis;
 
     rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr m_sub_drone_vel;
@@ -74,11 +76,10 @@ class LocalPlannerNode
 
     float m_drone_vel;
 
-    bool m_is_recieved_lane = false;
-
-    bool m_is_recieved_dist_map = false;
-
+    bool m_is_recieved_lane       = false;
+    bool m_is_recieved_dist_map   = false;
     bool m_is_recieved_drone_state = false;
+    bool m_lane_end_triggered     = false;
 
 
 };

@@ -22,20 +22,22 @@ import os
 # All strings must be the same length.
 # ---------------------------------------------------------------------------
 MAZE = [
-    "#############",
-    "#S         ##",
-    "#     #     #",
-    "#     #####",
-    "#       ###",
-    "#      ##",
-    "#    ###",
-    "#    ######",
-    "#    #      #",
-    "#    #####",
-    "#    ###",
-    "#  ###### #",
-    "#         #",
-    "#############",
+    "###########",   # outer top wall
+    "#S   #    #",   # Room 1 (top-left) | Room 2 (top-right)
+    "#         #",   # doorway: Room 1 <-> Room 2  (col 5 open)
+    "#    #    #",
+    "#    #    #",
+    "## #### ###",   # wall row: doorway Room 1->3 (col 2) | doorway Room 2->4 (col 7)
+    "#    #    #",   # Room 3 (mid-left)  | Room 4 (mid-right)
+    "#         #",   # doorway: Room 3 <-> Room 4
+    "#    #    #",
+    "#    #    #",
+    "## #### ###",   # wall row: doorway Room 3->5 (col 2) | doorway Room 4->6 (col 7)
+    "#    #    #",   # Room 5 (bot-left)  | Room 6 (bot-right)
+    "#         #",   # doorway: Room 5 <-> Room 6
+    "#    #    #",
+    "#    #    #",
+    "###########",   # outer bottom wall
 ]
 
 CELL   = 2.0   # metres per cell (corridor width)

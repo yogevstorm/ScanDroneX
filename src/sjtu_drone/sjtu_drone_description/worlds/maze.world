@@ -49,7 +49,7 @@
 
     <model name="wall_0">
       <static>true</static>
-      <pose>-12.000 13.000 1.250 0 0 0</pose>
+      <pose>-10.000 15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -69,7 +69,7 @@
     </model>
     <model name="wall_1">
       <static>true</static>
-      <pose>-10.000 13.000 1.250 0 0 0</pose>
+      <pose>-8.000 15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -89,7 +89,7 @@
     </model>
     <model name="wall_2">
       <static>true</static>
-      <pose>-8.000 13.000 1.250 0 0 0</pose>
+      <pose>-6.000 15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -109,7 +109,7 @@
     </model>
     <model name="wall_3">
       <static>true</static>
-      <pose>-6.000 13.000 1.250 0 0 0</pose>
+      <pose>-4.000 15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -129,7 +129,7 @@
     </model>
     <model name="wall_4">
       <static>true</static>
-      <pose>-4.000 13.000 1.250 0 0 0</pose>
+      <pose>-2.000 15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -149,7 +149,7 @@
     </model>
     <model name="wall_5">
       <static>true</static>
-      <pose>-2.000 13.000 1.250 0 0 0</pose>
+      <pose>0.000 15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -169,7 +169,7 @@
     </model>
     <model name="wall_6">
       <static>true</static>
-      <pose>0.000 13.000 1.250 0 0 0</pose>
+      <pose>2.000 15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -189,7 +189,7 @@
     </model>
     <model name="wall_7">
       <static>true</static>
-      <pose>2.000 13.000 1.250 0 0 0</pose>
+      <pose>4.000 15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -209,7 +209,7 @@
     </model>
     <model name="wall_8">
       <static>true</static>
-      <pose>4.000 13.000 1.250 0 0 0</pose>
+      <pose>6.000 15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -229,7 +229,7 @@
     </model>
     <model name="wall_9">
       <static>true</static>
-      <pose>6.000 13.000 1.250 0 0 0</pose>
+      <pose>8.000 15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -249,7 +249,7 @@
     </model>
     <model name="wall_10">
       <static>true</static>
-      <pose>8.000 13.000 1.250 0 0 0</pose>
+      <pose>10.000 15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -269,7 +269,7 @@
     </model>
     <model name="wall_11">
       <static>true</static>
-      <pose>10.000 13.000 1.250 0 0 0</pose>
+      <pose>-10.000 13.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -289,7 +289,7 @@
     </model>
     <model name="wall_12">
       <static>true</static>
-      <pose>12.000 13.000 1.250 0 0 0</pose>
+      <pose>0.000 13.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -309,7 +309,7 @@
     </model>
     <model name="wall_13">
       <static>true</static>
-      <pose>-12.000 11.000 1.250 0 0 0</pose>
+      <pose>10.000 13.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -329,7 +329,7 @@
     </model>
     <model name="wall_14">
       <static>true</static>
-      <pose>10.000 11.000 1.250 0 0 0</pose>
+      <pose>-10.000 11.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -349,7 +349,7 @@
     </model>
     <model name="wall_15">
       <static>true</static>
-      <pose>12.000 11.000 1.250 0 0 0</pose>
+      <pose>10.000 11.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -369,7 +369,7 @@
     </model>
     <model name="wall_16">
       <static>true</static>
-      <pose>-12.000 9.000 1.250 0 0 0</pose>
+      <pose>-10.000 9.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -409,7 +409,7 @@
     </model>
     <model name="wall_18">
       <static>true</static>
-      <pose>12.000 9.000 1.250 0 0 0</pose>
+      <pose>10.000 9.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -429,7 +429,7 @@
     </model>
     <model name="wall_19">
       <static>true</static>
-      <pose>-12.000 7.000 1.250 0 0 0</pose>
+      <pose>-10.000 7.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -469,7 +469,7 @@
     </model>
     <model name="wall_21">
       <static>true</static>
-      <pose>2.000 7.000 1.250 0 0 0</pose>
+      <pose>10.000 7.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -489,7 +489,7 @@
     </model>
     <model name="wall_22">
       <static>true</static>
-      <pose>4.000 7.000 1.250 0 0 0</pose>
+      <pose>-10.000 5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -509,7 +509,7 @@
     </model>
     <model name="wall_23">
       <static>true</static>
-      <pose>6.000 7.000 1.250 0 0 0</pose>
+      <pose>-8.000 5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -529,7 +529,7 @@
     </model>
     <model name="wall_24">
       <static>true</static>
-      <pose>8.000 7.000 1.250 0 0 0</pose>
+      <pose>-4.000 5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -549,7 +549,7 @@
     </model>
     <model name="wall_25">
       <static>true</static>
-      <pose>-12.000 5.000 1.250 0 0 0</pose>
+      <pose>-2.000 5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -569,7 +569,7 @@
     </model>
     <model name="wall_26">
       <static>true</static>
-      <pose>4.000 5.000 1.250 0 0 0</pose>
+      <pose>0.000 5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -589,7 +589,7 @@
     </model>
     <model name="wall_27">
       <static>true</static>
-      <pose>6.000 5.000 1.250 0 0 0</pose>
+      <pose>2.000 5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -609,7 +609,7 @@
     </model>
     <model name="wall_28">
       <static>true</static>
-      <pose>8.000 5.000 1.250 0 0 0</pose>
+      <pose>6.000 5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -629,7 +629,7 @@
     </model>
     <model name="wall_29">
       <static>true</static>
-      <pose>-12.000 3.000 1.250 0 0 0</pose>
+      <pose>8.000 5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -649,7 +649,7 @@
     </model>
     <model name="wall_30">
       <static>true</static>
-      <pose>2.000 3.000 1.250 0 0 0</pose>
+      <pose>10.000 5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -669,7 +669,7 @@
     </model>
     <model name="wall_31">
       <static>true</static>
-      <pose>4.000 3.000 1.250 0 0 0</pose>
+      <pose>-10.000 3.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -689,7 +689,7 @@
     </model>
     <model name="wall_32">
       <static>true</static>
-      <pose>-12.000 1.000 1.250 0 0 0</pose>
+      <pose>0.000 3.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -709,7 +709,7 @@
     </model>
     <model name="wall_33">
       <static>true</static>
-      <pose>-2.000 1.000 1.250 0 0 0</pose>
+      <pose>10.000 3.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -729,7 +729,7 @@
     </model>
     <model name="wall_34">
       <static>true</static>
-      <pose>0.000 1.000 1.250 0 0 0</pose>
+      <pose>-10.000 1.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -749,7 +749,7 @@
     </model>
     <model name="wall_35">
       <static>true</static>
-      <pose>2.000 1.000 1.250 0 0 0</pose>
+      <pose>10.000 1.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -769,7 +769,7 @@
     </model>
     <model name="wall_36">
       <static>true</static>
-      <pose>-12.000 -1.000 1.250 0 0 0</pose>
+      <pose>-10.000 -1.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -789,7 +789,7 @@
     </model>
     <model name="wall_37">
       <static>true</static>
-      <pose>-2.000 -1.000 1.250 0 0 0</pose>
+      <pose>0.000 -1.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -809,7 +809,7 @@
     </model>
     <model name="wall_38">
       <static>true</static>
-      <pose>0.000 -1.000 1.250 0 0 0</pose>
+      <pose>10.000 -1.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -829,7 +829,7 @@
     </model>
     <model name="wall_39">
       <static>true</static>
-      <pose>2.000 -1.000 1.250 0 0 0</pose>
+      <pose>-10.000 -3.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -849,7 +849,7 @@
     </model>
     <model name="wall_40">
       <static>true</static>
-      <pose>4.000 -1.000 1.250 0 0 0</pose>
+      <pose>0.000 -3.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -869,7 +869,7 @@
     </model>
     <model name="wall_41">
       <static>true</static>
-      <pose>6.000 -1.000 1.250 0 0 0</pose>
+      <pose>10.000 -3.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -889,7 +889,7 @@
     </model>
     <model name="wall_42">
       <static>true</static>
-      <pose>8.000 -1.000 1.250 0 0 0</pose>
+      <pose>-10.000 -5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -909,7 +909,7 @@
     </model>
     <model name="wall_43">
       <static>true</static>
-      <pose>-12.000 -3.000 1.250 0 0 0</pose>
+      <pose>-8.000 -5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -929,7 +929,7 @@
     </model>
     <model name="wall_44">
       <static>true</static>
-      <pose>-2.000 -3.000 1.250 0 0 0</pose>
+      <pose>-4.000 -5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -949,7 +949,7 @@
     </model>
     <model name="wall_45">
       <static>true</static>
-      <pose>12.000 -3.000 1.250 0 0 0</pose>
+      <pose>-2.000 -5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -969,7 +969,7 @@
     </model>
     <model name="wall_46">
       <static>true</static>
-      <pose>-12.000 -5.000 1.250 0 0 0</pose>
+      <pose>0.000 -5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -989,7 +989,7 @@
     </model>
     <model name="wall_47">
       <static>true</static>
-      <pose>-2.000 -5.000 1.250 0 0 0</pose>
+      <pose>2.000 -5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1009,7 +1009,7 @@
     </model>
     <model name="wall_48">
       <static>true</static>
-      <pose>0.000 -5.000 1.250 0 0 0</pose>
+      <pose>6.000 -5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1029,7 +1029,7 @@
     </model>
     <model name="wall_49">
       <static>true</static>
-      <pose>2.000 -5.000 1.250 0 0 0</pose>
+      <pose>8.000 -5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1049,7 +1049,7 @@
     </model>
     <model name="wall_50">
       <static>true</static>
-      <pose>4.000 -5.000 1.250 0 0 0</pose>
+      <pose>10.000 -5.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1069,7 +1069,7 @@
     </model>
     <model name="wall_51">
       <static>true</static>
-      <pose>6.000 -5.000 1.250 0 0 0</pose>
+      <pose>-10.000 -7.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1089,7 +1089,7 @@
     </model>
     <model name="wall_52">
       <static>true</static>
-      <pose>-12.000 -7.000 1.250 0 0 0</pose>
+      <pose>0.000 -7.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1109,7 +1109,7 @@
     </model>
     <model name="wall_53">
       <static>true</static>
-      <pose>-2.000 -7.000 1.250 0 0 0</pose>
+      <pose>10.000 -7.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1129,7 +1129,7 @@
     </model>
     <model name="wall_54">
       <static>true</static>
-      <pose>0.000 -7.000 1.250 0 0 0</pose>
+      <pose>-10.000 -9.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1149,7 +1149,7 @@
     </model>
     <model name="wall_55">
       <static>true</static>
-      <pose>2.000 -7.000 1.250 0 0 0</pose>
+      <pose>10.000 -9.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1169,7 +1169,7 @@
     </model>
     <model name="wall_56">
       <static>true</static>
-      <pose>-12.000 -9.000 1.250 0 0 0</pose>
+      <pose>-10.000 -11.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1189,7 +1189,7 @@
     </model>
     <model name="wall_57">
       <static>true</static>
-      <pose>-6.000 -9.000 1.250 0 0 0</pose>
+      <pose>0.000 -11.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1209,7 +1209,7 @@
     </model>
     <model name="wall_58">
       <static>true</static>
-      <pose>-4.000 -9.000 1.250 0 0 0</pose>
+      <pose>10.000 -11.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1229,7 +1229,7 @@
     </model>
     <model name="wall_59">
       <static>true</static>
-      <pose>-2.000 -9.000 1.250 0 0 0</pose>
+      <pose>-10.000 -13.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1249,7 +1249,7 @@
     </model>
     <model name="wall_60">
       <static>true</static>
-      <pose>0.000 -9.000 1.250 0 0 0</pose>
+      <pose>0.000 -13.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1269,7 +1269,7 @@
     </model>
     <model name="wall_61">
       <static>true</static>
-      <pose>2.000 -9.000 1.250 0 0 0</pose>
+      <pose>10.000 -13.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1289,7 +1289,7 @@
     </model>
     <model name="wall_62">
       <static>true</static>
-      <pose>4.000 -9.000 1.250 0 0 0</pose>
+      <pose>-10.000 -15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1309,7 +1309,7 @@
     </model>
     <model name="wall_63">
       <static>true</static>
-      <pose>8.000 -9.000 1.250 0 0 0</pose>
+      <pose>-8.000 -15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1329,7 +1329,7 @@
     </model>
     <model name="wall_64">
       <static>true</static>
-      <pose>-12.000 -11.000 1.250 0 0 0</pose>
+      <pose>-6.000 -15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1349,7 +1349,7 @@
     </model>
     <model name="wall_65">
       <static>true</static>
-      <pose>8.000 -11.000 1.250 0 0 0</pose>
+      <pose>-4.000 -15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1369,7 +1369,7 @@
     </model>
     <model name="wall_66">
       <static>true</static>
-      <pose>-12.000 -13.000 1.250 0 0 0</pose>
+      <pose>-2.000 -15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1389,7 +1389,7 @@
     </model>
     <model name="wall_67">
       <static>true</static>
-      <pose>-10.000 -13.000 1.250 0 0 0</pose>
+      <pose>0.000 -15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1409,7 +1409,7 @@
     </model>
     <model name="wall_68">
       <static>true</static>
-      <pose>-8.000 -13.000 1.250 0 0 0</pose>
+      <pose>2.000 -15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1429,7 +1429,7 @@
     </model>
     <model name="wall_69">
       <static>true</static>
-      <pose>-6.000 -13.000 1.250 0 0 0</pose>
+      <pose>4.000 -15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1449,7 +1449,7 @@
     </model>
     <model name="wall_70">
       <static>true</static>
-      <pose>-4.000 -13.000 1.250 0 0 0</pose>
+      <pose>6.000 -15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1469,7 +1469,7 @@
     </model>
     <model name="wall_71">
       <static>true</static>
-      <pose>-2.000 -13.000 1.250 0 0 0</pose>
+      <pose>8.000 -15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -1489,127 +1489,7 @@
     </model>
     <model name="wall_72">
       <static>true</static>
-      <pose>0.000 -13.000 1.250 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-          <material>
-            <ambient>0.45 0.45 0.45 1</ambient>
-            <diffuse>0.65 0.65 0.65 1</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
-    <model name="wall_73">
-      <static>true</static>
-      <pose>2.000 -13.000 1.250 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-          <material>
-            <ambient>0.45 0.45 0.45 1</ambient>
-            <diffuse>0.65 0.65 0.65 1</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
-    <model name="wall_74">
-      <static>true</static>
-      <pose>4.000 -13.000 1.250 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-          <material>
-            <ambient>0.45 0.45 0.45 1</ambient>
-            <diffuse>0.65 0.65 0.65 1</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
-    <model name="wall_75">
-      <static>true</static>
-      <pose>6.000 -13.000 1.250 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-          <material>
-            <ambient>0.45 0.45 0.45 1</ambient>
-            <diffuse>0.65 0.65 0.65 1</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
-    <model name="wall_76">
-      <static>true</static>
-      <pose>8.000 -13.000 1.250 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-          <material>
-            <ambient>0.45 0.45 0.45 1</ambient>
-            <diffuse>0.65 0.65 0.65 1</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
-    <model name="wall_77">
-      <static>true</static>
-      <pose>10.000 -13.000 1.250 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box><size>2.000 2.000 2.500</size></box>
-          </geometry>
-          <material>
-            <ambient>0.45 0.45 0.45 1</ambient>
-            <diffuse>0.65 0.65 0.65 1</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
-    <model name="wall_78">
-      <static>true</static>
-      <pose>12.000 -13.000 1.250 0 0 0</pose>
+      <pose>10.000 -15.000 1.250 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
