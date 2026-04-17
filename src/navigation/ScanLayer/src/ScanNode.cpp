@@ -4,6 +4,7 @@ using namespace std::chrono_literals;
 void ScanNode::Init()
 {
   m_pub_goal_pose = m_node->create_publisher<geometry_msgs::msg::PoseStamped>("goal_pose", 1);
+  m_pub_estop     = m_node->create_publisher<std_msgs::msg::Bool>("estop", 1);
 
   m_sub_map = m_node->create_subscription<nav_msgs::msg::OccupancyGrid>(
       "/map", 1, std::bind(&ScanNode::MapCallBack, this, std::placeholders::_1));
@@ -26,11 +27,12 @@ void ScanNode::Run()
     return;
   }
 
-  // Path is blocked — re-publish the same goal at ~1 Hz until it clears
+  // Re-publish the same goal every 10 s while the path is blocked so
+  // MissionPathNode keeps retrying the replan.
   if (m_is_path_blocked)
   {
     rclcpp::Time now = m_node->get_clock()->now();
-    if ((now - m_last_blocked_pub).seconds() >= 1.0)
+    if ((now - m_last_blocked_pub).seconds() >= 10.0)
     {
       m_current_goal.header.stamp = now;
       m_pub_goal_pose->publish(m_current_goal);
@@ -55,7 +57,31 @@ void ScanNode::IsDestinationCallBack(const std_msgs::msg::Bool::SharedPtr msg)
 
 void ScanNode::IsPathBlockedCallBack(const std_msgs::msg::Bool::SharedPtr msg)
 {
+  bool was_blocked  = m_is_path_blocked;
   m_is_path_blocked = msg->data;
+
+  if (m_is_path_blocked)
+  {
+    PublishEstop(true);
+  }
+  else if (was_blocked)
+  {
+    // Transition: blocked → clear. Resume drone and re-publish goal once so
+    // MissionPathNode triggers a fresh replan on the now-open path.
+    PublishEstop(false);
+    if (m_has_goal)
+    {
+      m_current_goal.header.stamp = m_node->get_clock()->now();
+      m_pub_goal_pose->publish(m_current_goal);
+    }
+  }
+}
+
+void ScanNode::PublishEstop(bool estop)
+{
+  std_msgs::msg::Bool msg;
+  msg.data = estop;
+  m_pub_estop->publish(msg);
 }
 
 void ScanNode::PublishNewGoal()
