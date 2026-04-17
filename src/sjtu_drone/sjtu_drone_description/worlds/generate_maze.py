@@ -41,7 +41,7 @@ MAZE = [
 ]
 
 CELL   = 2.0   # metres per cell (corridor width)
-HEIGHT = 2.5   # wall height in metres
+HEIGHT = 5.0   # wall height in metres
 
 # ---------------------------------------------------------------------------
 

@@ -28,6 +28,8 @@ void MissionPathNode::Init_Publishers_Subscribers()
 
   m_pub_is_destination = m_node->create_publisher<std_msgs::msg::Bool>("is_destination", 1);
 
+  m_pub_goal_unreachable = m_node->create_publisher<std_msgs::msg::Bool>("is_goal_unreachable", 1);
+
   m_pub_drone_vel = m_node->create_publisher<std_msgs::msg::Float32>("drone_vel", 1);
 }
 
@@ -68,6 +70,15 @@ void MissionPathNode::InitMission()
   m_dist_map = m_distmap.CreateDistMap(m_map, {0, -1});
 
   m_mpath = m_mission_path.FindPath(m_drone_state, m_goal_pose.pose, m_dist_map);
+
+  std_msgs::msg::Bool unreachable_msg;
+  unreachable_msg.data = m_mpath.path_msg.empty();
+  m_pub_goal_unreachable->publish(unreachable_msg);
+
+  if (m_mpath.path_msg.empty())
+  {
+    return;
+  }
 
   m_pub_mission_path->publish(m_mpath);
 

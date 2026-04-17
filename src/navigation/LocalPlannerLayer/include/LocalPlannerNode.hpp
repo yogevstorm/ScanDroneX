@@ -42,6 +42,8 @@ class LocalPlannerNode
 
     void DroneStateCallBack(const navigation_msgs::msg::DroneState::SharedPtr msg);
 
+    void IsPathBlockedCallBack(const std_msgs::msg::Bool::SharedPtr msg);
+
     void PublishPathMsg();
 
     void PubEstop(bool estop);
@@ -68,6 +70,8 @@ class LocalPlannerNode
 
     rclcpp::Subscription<navigation_msgs::msg::DroneState>::SharedPtr m_sub_drone_state;
 
+    rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_is_path_blocked;
+
     navigation_msgs::msg::Lane m_lane;
 
     navigation_msgs::msg::DistMapMsg m_dist_map;
@@ -76,10 +80,11 @@ class LocalPlannerNode
 
     float m_drone_vel;
 
-    bool m_is_recieved_lane       = false;
-    bool m_is_recieved_dist_map   = false;
+    bool m_is_recieved_lane        = false;
+    bool m_is_recieved_dist_map    = false;
     bool m_is_recieved_drone_state = false;
-    bool m_lane_end_triggered     = false;
+    bool m_lane_end_triggered      = false;
+    bool m_is_path_blocked         = false;
 
 
 };

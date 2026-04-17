@@ -25,6 +25,9 @@ void LocalPlannerNode::InitSubscribers()
   m_sub_dist_map = m_node->create_subscription<navigation_msgs::msg::DistMapMsg>("dist_map", 10, std::bind(&LocalPlannerNode::DistMapCallBack, this, std::placeholders::_1));
 
   m_sub_drone_state = m_node->create_subscription<navigation_msgs::msg::DroneState>("drone_state", 10, std::bind(&LocalPlannerNode::DroneStateCallBack, this, std::placeholders::_1));
+
+  m_sub_is_path_blocked = m_node->create_subscription<std_msgs::msg::Bool>(
+      "is_path_blocked", 1, std::bind(&LocalPlannerNode::IsPathBlockedCallBack, this, std::placeholders::_1));
 }
 
 void LocalPlannerNode::InitParams()
@@ -88,7 +91,7 @@ void LocalPlannerNode::LaneCallBack(const navigation_msgs::msg::Lane::SharedPtr 
 {
   m_lane = *p_msg;
 
-  if(m_lane.clusters.size() < 2)
+  if(m_lane.clusters.size() < 5)
   {
     PubEstop(true);
 
@@ -156,8 +159,22 @@ void LocalPlannerNode::VisualizePath(navigation_msgs::msg::PathMsg p_path)
   m_pub_path_vis->publish(vis_path);
 }
 
+void LocalPlannerNode::IsPathBlockedCallBack(const std_msgs::msg::Bool::SharedPtr msg)
+{
+  bool was_blocked  = m_is_path_blocked;
+  m_is_path_blocked = msg->data;
+
+  if (!m_is_path_blocked && was_blocked)
+  {
+    // Clear stale path — RunLocalPlanner will produce a fresh one before publishing
+    m_local_planner.m_path.path_msg.clear();
+  }
+}
+
 void LocalPlannerNode::RunLocalPlanner()
 {
+  if (m_is_path_blocked) return;
+
   if(!m_is_recieved_lane || !m_is_recieved_dist_map || !m_is_recieved_drone_state || (m_lane.clusters.empty())) return;
 
   m_local_planner.RunLocalPlanner(m_lane, m_dist_map, m_drone_state, m_drone_vel);

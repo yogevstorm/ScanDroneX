@@ -41,7 +41,7 @@ navigation_msgs::msg::PathMsg MissionPath::Smooth(navigation_msgs::msg::PathMsg 
                                                   int max_iterations)
 {
   navigation_msgs::msg::PathMsg new_path = path;
-  float change = tolerance;
+  float change = tolerance + 1.0f;
   int iteration = 0;
   float grad_x, grad_y, grad_yaw, dx, dy, dsi;
 
@@ -49,7 +49,7 @@ navigation_msgs::msg::PathMsg MissionPath::Smooth(navigation_msgs::msg::PathMsg 
   {
     change = 0;
 
-    for(int i = 1; i < path.path_msg.size() - 1; i++)
+    for(int i = 1; i < (int)path.path_msg.size() - 1; i++)
     {
       grad_x = weight_data * (path.path_msg[i].x - new_path.path_msg[i].x)
              + weight_smooth * (new_path.path_msg[i+1].x + new_path.path_msg[i-1].x - 2*new_path.path_msg[i].x);
@@ -73,10 +73,14 @@ navigation_msgs::msg::PathMsg MissionPath::Smooth(navigation_msgs::msg::PathMsg 
   }
 
   path.path_msg.clear();
+  if (new_path.path_msg.empty())
+  {
+    return path;
+  }
   navigation_msgs::msg::WorldPoint orig = new_path.path_msg[0];
   path.path_msg.push_back(orig);
 
-  for(size_t i = 0; i < new_path.path_msg.size(); i++)
+  for(size_t i = 1; i < new_path.path_msg.size(); i++)
   {
     dx  = new_path.path_msg[i].x - new_path.path_msg[i - 1].x;
     dy  = new_path.path_msg[i].y - new_path.path_msg[i - 1].y;
@@ -152,10 +156,15 @@ navigation_msgs::msg::PathMsg MissionPath::FindPath(geometry_msgs::msg::Pose sta
 
   path = Smooth(path, 0.1, 0.5, 0.001, 100000);
 
+  if (path.path_msg.empty())
+  {
+    return path;
+  }
+
   path.path_msg[0].s = 0.0;
   path.path_msg[0].ind = 0;
 
-  for(size_t i = 1; i <= path.path_msg.size() - 1; i++)
+  for(size_t i = 1; i < path.path_msg.size(); i++)
   {
     path.path_msg[i].s = path.path_msg[i-1].s
       + m_control_utils.DisBetweenWPoints(path.path_msg[i], path.path_msg[i-1]);

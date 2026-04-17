@@ -26,6 +26,15 @@
             }
         ]
     },
+
+    {
+        "name": "MissionPathNode_debug",
+        "request": "launch",
+        "type": "cppdbg",
+        "miDebuggerServerAddress": "localhost:3000",
+        "cwd": "${workspaceRoot}",
+        "program": "/home/yogev/Desktop/ScanDroneX/install/navigation/lib/navigation/MissionPathNode"
+    },
         
 
     {

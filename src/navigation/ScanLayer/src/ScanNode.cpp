@@ -17,11 +17,15 @@ void ScanNode::Init()
 
   m_sub_is_path_blocked = m_node->create_subscription<std_msgs::msg::Bool>(
       "is_path_blocked", 1, std::bind(&ScanNode::IsPathBlockedCallBack, this, std::placeholders::_1));
+
+  m_sub_goal_unreachable = m_node->create_subscription<std_msgs::msg::Bool>(
+      "is_goal_unreachable", 1, std::bind(&ScanNode::GoalUnreachableCallBack, this, std::placeholders::_1));
 }
 
 void ScanNode::Run()
 {
   if (!m_is_map_received) return;
+  if (m_returning_home)   return;
 
   // No goal yet — pick one as soon as the map arrives
   if (!m_has_goal)
@@ -52,6 +56,8 @@ void ScanNode::MapCallBack(const nav_msgs::msg::OccupancyGrid::SharedPtr msg)
 
 void ScanNode::IsDestinationCallBack(const std_msgs::msg::Bool::SharedPtr msg)
 {
+  if (m_returning_home) return;
+
   if (msg->data && m_has_goal)
   {
     PublishNewGoal();
@@ -78,6 +84,40 @@ void ScanNode::IsPathBlockedCallBack(const std_msgs::msg::Bool::SharedPtr msg)
       m_pub_goal_pose->publish(m_current_goal);
     }
   }
+}
+
+void ScanNode::GoalUnreachableCallBack(const std_msgs::msg::Bool::SharedPtr msg)
+{
+  if (m_returning_home) return;
+
+  if (!msg->data)
+  {
+    m_unreachable_count = 0;
+    return;
+  }
+
+  if (!m_has_goal) return;
+
+  m_is_path_blocked = false;
+  PublishEstop(false);
+  m_unreachable_count++;
+
+  if (m_unreachable_count >= 10)
+  {
+    RCLCPP_WARN(m_node->get_logger(), "10 consecutive unreachable goals — returning home.");
+    geometry_msgs::msg::PoseStamped home;
+    home.header.stamp    = m_node->get_clock()->now();
+    home.header.frame_id = "map";
+    home.pose.position.x = 0.0;
+    home.pose.position.y = 0.0;
+    home.pose.orientation.w = 1.0;  // yaw = 0
+    m_pub_goal_pose->publish(home);
+    m_returning_home = true;
+    m_has_goal       = false;
+    return;
+  }
+
+  PublishNewGoal();
 }
 
 void ScanNode::PublishEstop(bool estop)

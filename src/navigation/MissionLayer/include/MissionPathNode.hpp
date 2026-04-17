@@ -44,6 +44,7 @@ public:
 
   rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_estop;
   rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_is_destination;
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_goal_unreachable;
   rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr m_pub_drone_vel;
   rclcpp::Publisher<navigation_msgs::msg::PathMsg>::SharedPtr m_pub_mission_path;
 
