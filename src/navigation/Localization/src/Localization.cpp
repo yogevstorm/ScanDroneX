@@ -7,20 +7,28 @@ void Localization::Init_Publishers_Subscribers()
 
   m_pub_drone_state = m_node->create_publisher<geometry_msgs::msg::Pose>("drone_pose", 1);
 
-  m_sub_state = m_node->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
-      "pose", 1, std::bind(&Localization::StateCallBack, this, std::placeholders::_1));
+  m_tf_buffer = std::make_shared<tf2_ros::Buffer>(m_node->get_clock());
+  m_tf_listener = std::make_shared<tf2_ros::TransformListener>(*m_tf_buffer, m_node);
+
+  m_timer = m_node->create_wall_timer(
+      100ms, std::bind(&Localization::TimerCallback, this));
 }
 
-void Localization::StateCallBack(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg)
+void Localization::TimerCallback()
 {
-  geometry_msgs::msg::PoseWithCovarianceStamped state_msg;
-  state_msg = *msg;
+  try {
+    auto transform = m_tf_buffer->lookupTransform(
+        "map", "simple_drone/base_footprint", tf2::TimePointZero);
 
-  m_drone_state_msg.position.x = state_msg.pose.pose.position.x;
-  m_drone_state_msg.position.y = state_msg.pose.pose.position.y;
-  m_drone_state_msg.position.z = m_control_utils.Quat2Yaw(state_msg.pose.pose.orientation) - M_PI / 2;
+    m_drone_state_msg.position.x = transform.transform.translation.x;
+    m_drone_state_msg.position.y = transform.transform.translation.y;
+    m_drone_state_msg.position.z = m_control_utils.Quat2Yaw(transform.transform.rotation) - M_PI / 2;
 
-  CorrectDroneState();
+    CorrectDroneState();
+  } catch (const tf2::TransformException & ex) {
+    RCLCPP_WARN_THROTTLE(m_node->get_logger(), *m_node->get_clock(), 1000,
+        "TF lookup map->base_footprint failed: %s", ex.what());
+  }
 }
 
 void Localization::CorrectDroneState()

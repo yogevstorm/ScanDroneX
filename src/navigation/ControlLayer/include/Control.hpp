@@ -27,6 +27,8 @@ public:
   float m_v_max = 0.8;
   float m_v_min = 0.2;
   float m_k_gain = 1.0;
+  float m_yaw_k_gain = 2.0f;
+  float m_max_angular = 2.0f;
 
 private:
   float PurePursuit(bool is_reverse);
@@ -34,6 +36,7 @@ private:
   int FindClosestIdx();
   int FindLookaheadIdx(int closest_idx);
   std::tuple<float, float> RelPointToDrone(float x, float y);
+  std::vector<float> YawAlignmentCmd(float yaw_error);
 
   ControlUtils m_control_utils;
 
@@ -42,6 +45,7 @@ private:
 
   int m_closest_idx = 0;
   int m_lookahead_idx = 0;
+  bool m_is_rotating = false;
 
 protected:
 };

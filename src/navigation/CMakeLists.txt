@@ -15,6 +15,7 @@ find_package(visualization_msgs REQUIRED)
 find_package(navigation_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 set(dependencies
   rclcpp
@@ -25,6 +26,7 @@ set(dependencies
   navigation_msgs
   OpenCV
   Eigen3
+  tf2_ros
 )
 
 include_directories(

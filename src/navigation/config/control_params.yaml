@@ -16,6 +16,8 @@ ControlNode:
     DS: 0.2
     MAX_DIS_DRONE_FROM_TRAJ: 0.7
     PURE_PERSUIT_CTE: 1.5
+    YAW_K_GAIN: 2.0
+    MAX_ANGULAR: 2.0
 
 
 

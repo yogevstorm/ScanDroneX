@@ -11,6 +11,8 @@ void ControlNode::InitParams()
   m_node->declare_parameter<float>("V_MAX", 0.8);
   m_node->declare_parameter<float>("V_MIN", 0.2);
   m_node->declare_parameter<float>("K_GAIN", 1.0);
+  m_node->declare_parameter<float>("YAW_K_GAIN", 2.0);
+  m_node->declare_parameter<float>("MAX_ANGULAR", 2.0);
 
 }
 
@@ -24,6 +26,8 @@ void ControlNode::UpdateParams()
   m_node->get_parameter("V_MAX", m_control.m_v_max);
   m_node->get_parameter("V_MIN", m_control.m_v_min);
   m_node->get_parameter("K_GAIN", m_control.m_k_gain);
+  m_node->get_parameter("YAW_K_GAIN", m_control.m_yaw_k_gain);
+  m_node->get_parameter("MAX_ANGULAR", m_control.m_max_angular);
 }
 
 void ControlNode::Init_Publishers_Subscribers()

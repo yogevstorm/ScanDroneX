@@ -16,11 +16,34 @@ std::vector<float> Control::GetCmd(navigation_msgs::msg::DroneState drone_state,
   m_closest_idx = FindClosestIdx();
   m_lookahead_idx = FindLookaheadIdx(m_closest_idx);
 
+  float target_yaw = m_trajectory.path_msg[m_lookahead_idx].yaw;
+  float yaw_error  = m_control_utils.angle_wrap(target_yaw - m_drone_state.yaw);
+  auto rot_cmd = YawAlignmentCmd(yaw_error);
+  if (!rot_cmd.empty()) return rot_cmd;
+
   float steer = PurePursuit(is_reverse);
   float v = AdaptiveSpeed();
   if(is_reverse) v = -v;
 
   return {v, steer};
+}
+
+// Rotates the drone in place when heading error is large (hysteresis 60 -> 10 deg).
+// Returns {0, omega} while rotating, empty vector when not rotating.
+std::vector<float> Control::YawAlignmentCmd(float yaw_error)
+{
+  static constexpr float START_ROT_RAD = 60.0f * M_PI / 180.0f;
+  static constexpr float STOP_ROT_RAD  = 10.0f * M_PI / 180.0f;
+
+  if (!m_is_rotating && std::abs(yaw_error) > START_ROT_RAD)
+    m_is_rotating = true;
+  if (m_is_rotating && std::abs(yaw_error) < STOP_ROT_RAD)
+    m_is_rotating = false;
+
+  if (!m_is_rotating) return {};
+
+  float omega = m_control_utils.Saturate(m_yaw_k_gain * yaw_error, -m_max_angular, m_max_angular);
+  return {0.0f, omega};
 }
 
 // Finds the trajectory point closest to the drone's current position.

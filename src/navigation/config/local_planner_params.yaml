@@ -4,7 +4,7 @@ LocalPlannerNode:
     COLLISION_R: 0.25
     WHEEL_BASE: 0.26
     COLLISION_PNTS: [0.0, 0.2]
-    MAX_STEER_ANGLE_DEG: 30.0
+    MAX_STEER_ANGLE_DEG: 90.0
     REVERSE_MAX_STEER_ANGLE: 20.0
 
     # local planner params

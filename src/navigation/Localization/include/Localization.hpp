@@ -8,6 +8,9 @@
 #include <visualization_msgs/msg/marker_array.hpp>
 #include "navigation_msgs/msg/world_point.hpp"
 #include "navigation_msgs/msg/dist_map_msg.hpp"
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2/exceptions.h>
 #include <memory>
 #include <map>
 #include <vector>
@@ -26,16 +29,16 @@ private:
   void CorrectDroneState();
   Eigen::Matrix3f CreateTransformationMatrix(float x, float y, float yaw);
   void DroneStateVis(geometry_msgs::msg::Pose drone_state);
-  void StateCallBack(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg);
-
-  geometry_msgs::msg::Quaternion m_euler_2_quat(double yaw, double pitch, double roll);
-  float m_quat_2_yaw(geometry_msgs::msg::Quaternion q);
+  void TimerCallback();
 
   ControlUtils m_control_utils;
 
+  std::shared_ptr<tf2_ros::Buffer> m_tf_buffer;
+  std::shared_ptr<tf2_ros::TransformListener> m_tf_listener;
+  rclcpp::TimerBase::SharedPtr m_timer;
+
   rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr m_pub_drone_state_vis;
   rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr m_pub_drone_state;
-  rclcpp::Subscription<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr m_sub_state;
 
   geometry_msgs::msg::Pose m_drone_state, m_drone_state_msg;
 
