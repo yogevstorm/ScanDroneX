@@ -29,10 +29,13 @@ public:
   float m_k_gain = 1.0;
   float m_yaw_k_gain = 2.0f;
   float m_max_angular = 2.0f;
+  float m_cross_track_k_gain = 1.0f;
+  float m_max_lateral = 0.3f;
 
 private:
   float PurePursuit(bool is_reverse);
   float AdaptiveSpeed();
+  float CrossTrackCmd();
   int FindClosestIdx();
   int FindLookaheadIdx(int closest_idx);
   std::tuple<float, float> RelPointToDrone(float x, float y);

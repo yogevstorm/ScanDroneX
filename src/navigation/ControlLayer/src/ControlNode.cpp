@@ -13,6 +13,8 @@ void ControlNode::InitParams()
   m_node->declare_parameter<float>("K_GAIN", 1.0);
   m_node->declare_parameter<float>("YAW_K_GAIN", 2.0);
   m_node->declare_parameter<float>("MAX_ANGULAR", 2.0);
+  m_node->declare_parameter<float>("CROSS_TRACK_K_GAIN", 1.0);
+  m_node->declare_parameter<float>("MAX_LATERAL", 0.3);
 
 }
 
@@ -28,6 +30,8 @@ void ControlNode::UpdateParams()
   m_node->get_parameter("K_GAIN", m_control.m_k_gain);
   m_node->get_parameter("YAW_K_GAIN", m_control.m_yaw_k_gain);
   m_node->get_parameter("MAX_ANGULAR", m_control.m_max_angular);
+  m_node->get_parameter("CROSS_TRACK_K_GAIN", m_control.m_cross_track_k_gain);
+  m_node->get_parameter("MAX_LATERAL", m_control.m_max_lateral);
 }
 
 void ControlNode::Init_Publishers_Subscribers()
@@ -103,6 +107,7 @@ void ControlNode::TrajectoryCallBack(const navigation_msgs::msg::PathMsg::Shared
     geometry_msgs::msg::Twist cmd_msg;
     cmd_msg.linear.x  = cmd[0];
     cmd_msg.angular.z = cmd[1];
+    cmd_msg.linear.y  = cmd[2];
     m_pub_cmd->publish(cmd_msg);
   }
 

@@ -8,7 +8,7 @@ std::vector<float> Control::GetCmd(navigation_msgs::msg::DroneState drone_state,
 
   if(trajectory.path_msg.empty())
   {
-    return {0.0f, 0.0f};
+    return {0.0f, 0.0f, 0.0f};
   }
 
   bool is_reverse = (m_trajectory.path_msg[0].gear == -1);
@@ -23,9 +23,10 @@ std::vector<float> Control::GetCmd(navigation_msgs::msg::DroneState drone_state,
 
   float steer = PurePursuit(is_reverse);
   float v = AdaptiveSpeed();
+  float lateral = CrossTrackCmd();
   if(is_reverse) v = -v;
 
-  return {v, steer};
+  return {v, steer, lateral};
 }
 
 // Rotates the drone in place when heading error is large (hysteresis 60 -> 10 deg).
@@ -43,7 +44,7 @@ std::vector<float> Control::YawAlignmentCmd(float yaw_error)
   if (!m_is_rotating) return {};
 
   float omega = m_control_utils.Saturate(m_yaw_k_gain * yaw_error, -m_max_angular, m_max_angular);
-  return {0.0f, omega};
+  return {0.0f, omega, 0.0f};
 }
 
 // Finds the trajectory point closest to the drone's current position.
@@ -104,6 +105,16 @@ float Control::AdaptiveSpeed()
   float k = std::abs(m_trajectory.path_msg[m_lookahead_idx].k);
   float v = m_v_max / (1.0f + m_k_gain * k);
   return std::max(m_v_min, std::min(m_v_max, v));
+}
+
+// Computes lateral (strafe) velocity to correct cross-track error.
+// Uses the closest trajectory point in the drone's local frame; y-component
+// is the signed lateral offset (positive = trajectory is to the left).
+float Control::CrossTrackCmd()
+{
+  auto [x, y] = RelPointToDrone(m_trajectory.path_msg[m_closest_idx].x,
+                                 m_trajectory.path_msg[m_closest_idx].y);
+  return m_control_utils.Saturate(m_cross_track_k_gain * y, -m_max_lateral, m_max_lateral);
 }
 
 // Transforms world-frame point (x, y) into the drone's local frame.

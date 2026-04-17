@@ -18,6 +18,8 @@ ControlNode:
     PURE_PERSUIT_CTE: 1.5
     YAW_K_GAIN: 2.0
     MAX_ANGULAR: 2.0
+    CROSS_TRACK_K_GAIN: 1.0
+    MAX_LATERAL: 0.3
 
 
 
