@@ -15,7 +15,8 @@ void BehaviorNode::InitPublishers()
 
   m_pub_drone_state = m_node->create_publisher<navigation_msgs::msg::DroneState>("drone_state", 1);
 
-  m_pub_is_path_blocked = m_node->create_publisher<std_msgs::msg::Bool>("is_path_blocked", 1);
+  m_pub_is_path_blocked  = m_node->create_publisher<std_msgs::msg::Bool>("is_path_blocked", 1);
+  m_pub_is_out_of_lane   = m_node->create_publisher<std_msgs::msg::Bool>("is_out_of_lane", 1);
 }
 
 void BehaviorNode::InitSubscribers()
@@ -98,6 +99,16 @@ void BehaviorNode::RunBehaviorPlanner()
   std_msgs::msg::Bool blocked_msg;
   blocked_msg.data = m_behavior_planner.m_is_path_blocked;
   m_pub_is_path_blocked->publish(blocked_msg);
+
+  bool out_of_lane = false;
+  if (!m_behavior_planner.m_lane.clusters.empty())
+  {
+    const auto& nearest = m_behavior_planner.m_lane.clusters.front();
+    out_of_lane = (m_drone_state.d < nearest.dr || m_drone_state.d > nearest.dl);
+  }
+  std_msgs::msg::Bool out_of_lane_msg;
+  out_of_lane_msg.data = out_of_lane;
+  m_pub_is_out_of_lane->publish(out_of_lane_msg);
 
   VisLane();
 }

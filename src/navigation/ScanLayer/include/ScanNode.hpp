@@ -18,6 +18,7 @@ private:
   void IsDestinationCallBack(const std_msgs::msg::Bool::SharedPtr msg);
   void IsPathBlockedCallBack(const std_msgs::msg::Bool::SharedPtr msg);
   void GoalUnreachableCallBack(const std_msgs::msg::Bool::SharedPtr msg);
+  void IsOutOfLaneCallBack(const std_msgs::msg::Bool::SharedPtr msg);
   void PublishNewGoal();
   void PublishEstop(bool estop);
 
@@ -40,6 +41,7 @@ private:
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_lane_end;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_is_path_blocked;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_goal_unreachable;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_is_out_of_lane;
 
 protected:
 };

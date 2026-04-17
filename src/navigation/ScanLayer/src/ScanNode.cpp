@@ -20,6 +20,9 @@ void ScanNode::Init()
 
   m_sub_goal_unreachable = m_node->create_subscription<std_msgs::msg::Bool>(
       "is_goal_unreachable", 1, std::bind(&ScanNode::GoalUnreachableCallBack, this, std::placeholders::_1));
+
+  m_sub_is_out_of_lane = m_node->create_subscription<std_msgs::msg::Bool>(
+      "is_out_of_lane", 1, std::bind(&ScanNode::IsOutOfLaneCallBack, this, std::placeholders::_1));
 }
 
 void ScanNode::Run()
@@ -83,6 +86,25 @@ void ScanNode::IsPathBlockedCallBack(const std_msgs::msg::Bool::SharedPtr msg)
       m_current_goal.header.stamp = m_node->get_clock()->now();
       m_pub_goal_pose->publish(m_current_goal);
     }
+  }
+}
+
+void ScanNode::IsOutOfLaneCallBack(const std_msgs::msg::Bool::SharedPtr msg)
+{
+  if (m_returning_home) return;
+
+  if (msg->data)
+  {
+    PublishEstop(true);
+    if (m_has_goal)
+    {
+      m_current_goal.header.stamp = m_node->get_clock()->now();
+      m_pub_goal_pose->publish(m_current_goal);
+    }
+  }
+  else
+  {
+    PublishEstop(false);
   }
 }
 
