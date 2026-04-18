@@ -91,7 +91,7 @@ void LocalPlannerNode::LaneCallBack(const navigation_msgs::msg::Lane::SharedPtr 
 {
   m_lane = *p_msg;
 
-  if(m_lane.clusters.size() < 5)
+  if(m_lane.clusters.size() < 15)
   {
     PubEstop(true);
 
