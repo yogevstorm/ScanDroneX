@@ -122,7 +122,7 @@ def generate_launch_description():
 
     world_file_default = os.path.join(
         get_package_share_directory('sjtu_drone_description'),
-        'worlds', 'empty.world'
+        'worlds', 'maze.world'
     )
 
     world = DeclareLaunchArgument(
@@ -131,8 +131,8 @@ def generate_launch_description():
         description='Full path to world file to load'
     )
 
-    spawn_x = DeclareLaunchArgument('spawn_x', default_value='0.0', description='Drone spawn X')
-    spawn_y = DeclareLaunchArgument('spawn_y', default_value='0.0', description='Drone spawn Y')
+    spawn_x = DeclareLaunchArgument('spawn_x', default_value='-8.0', description='Drone spawn X')
+    spawn_y = DeclareLaunchArgument('spawn_y', default_value='13.0', description='Drone spawn Y')
     spawn_z = DeclareLaunchArgument('spawn_z', default_value='0.3', description='Drone spawn Z')
 
     # --- Environment variables for gz-sim plugin / model discovery ---

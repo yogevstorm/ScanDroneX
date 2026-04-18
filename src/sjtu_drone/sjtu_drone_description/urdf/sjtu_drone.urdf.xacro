@@ -49,6 +49,13 @@
   </joint>
   <link name="sonar_link"/>
 
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="imu_link" />
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+  <link name="imu_link"/>
+
   <!-- 2-D LiDAR — mounted on top of the drone body -->
   <joint name="lidar_joint" type="fixed">
     <parent link="base_link" />
@@ -111,7 +118,7 @@
   <!-- Sensors (gz-sim native, no Classic plugin children) -->
 
   <!-- IMU sensor -->
-  <gazebo reference="base_link">
+  <gazebo reference="imu_link">
     <sensor name='sensor_imu' type='imu'>
       <always_on>true</always_on>
       <update_rate>100</update_rate>
@@ -127,7 +134,7 @@
           <z><noise type="gaussian"><mean>0</mean><stddev>0.01</stddev></noise></z>
         </linear_acceleration>
       </imu>
-      <gz_frame_id>${mp['namespace']}/base_link</gz_frame_id>
+      <gz_frame_id>${mp['namespace']}/imu_link</gz_frame_id>
     </sensor>
   </gazebo>
 
