@@ -10,7 +10,7 @@ slam_toolbox:
     ceres_loss_function: None
 
     # ROS Parameters
-    odom_frame: odom_lidar
+    odom_frame: ekf_odom
     map_frame: map
     base_frame: simple_drone/base_footprint
     scan_topic: /simple_drone/scan

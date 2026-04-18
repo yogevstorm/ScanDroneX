@@ -25,19 +25,19 @@ ekf_filter_node:
     odom0_pose_rejection_threshold: 2.0
     odom0_twist_rejection_threshold: 2.0
 
-    # --- Input 1: IMU (gyro z = yaw rate only) ---
-    # Secondary source: only yaw-rate from gyro to smooth heading; no accel.
-    imu0: /simple_drone/imu
+    # --- Input 1: cmd_vel dead-reckoning odometry (pose x,y,yaw only) ---
+    # Secondary source: less trusted than RF2O; relative mode avoids cross-frame TF issues.
+    odom1: /odom_cmd_vel
     # [x,    y,     z,     roll,  pitch, yaw,   vx,    vy,    vz,    vroll, vpitch, vyaw,  ax,    ay,    az   ]
-    imu0_config: [false, false, false,
-                  false, false, false,
-                  false, false, false,
-                  false, false, true,
-                  false, false, false]
-    imu0_differential: false
-    imu0_relative: false
-    imu0_queue_size: 10
-    imu0_twist_rejection_threshold: 2.0
+    odom1_config: [false, false, false,
+                   false, false, false,
+                   true,  true,  false,
+                   false, false, false,
+                   false, false, false]
+    odom1_differential: false
+    odom1_relative: true
+    odom1_queue_size: 5
+    odom1_pose_rejection_threshold: 3.0
 
     # --- Process noise covariance (15x15, row-major) ---
     # State order: x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az

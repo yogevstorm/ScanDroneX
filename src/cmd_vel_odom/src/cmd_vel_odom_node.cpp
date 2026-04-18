@@ -13,8 +13,6 @@ CmdVelOdomNode::CmdVelOdomNode()
     std::bind(&CmdVelOdomNode::cmdVelCallback, this, std::placeholders::_1));
 
   odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom_cmd_vel", 10);
-
-  tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 }
 
 void CmdVelOdomNode::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
@@ -37,7 +35,7 @@ void CmdVelOdomNode::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr m
   nav_msgs::msg::Odometry odom;
   odom.header.stamp    = current_time;
   odom.header.frame_id = "odom_cmd_vel";
-  odom.child_frame_id  = "base_link";
+  odom.child_frame_id  = "simple_drone/base_footprint";
 
   odom.pose.pose.position.x    = x_;
   odom.pose.pose.position.y    = y_;
@@ -49,21 +47,14 @@ void CmdVelOdomNode::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr m
 
   odom.twist.twist = *msg;
 
+  // Twist covariance: higher than RF2O (vx=0.1) so EKF trusts this source less.
+  // Diagonal: vx=0.3, vy=0.3, vz=1e6(unused), vroll=1e6, vpitch=1e6, vyaw=1e6(not fused)
+  odom.twist.covariance[0]  = 0.3;
+  odom.twist.covariance[7]  = 0.3;
+  odom.twist.covariance[14] = 1e6;
+  odom.twist.covariance[21] = 1e6;
+  odom.twist.covariance[28] = 1e6;
+  odom.twist.covariance[35] = 1e6;
+
   odom_pub_->publish(odom);
-
-  // Broadcast TF: odom_cmd_vel -> base_link
-  geometry_msgs::msg::TransformStamped tf;
-  tf.header.stamp    = current_time;
-  tf.header.frame_id = "odom_cmd_vel";
-  tf.child_frame_id  = "base_link";
-
-  tf.transform.translation.x = x_;
-  tf.transform.translation.y = y_;
-  tf.transform.translation.z = z_;
-  tf.transform.rotation.x    = q.x();
-  tf.transform.rotation.y    = q.y();
-  tf.transform.rotation.z    = q.z();
-  tf.transform.rotation.w    = q.w();
-
-  tf_broadcaster_->sendTransform(tf);
 }
