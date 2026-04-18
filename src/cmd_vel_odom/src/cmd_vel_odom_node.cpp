@@ -47,14 +47,13 @@ void CmdVelOdomNode::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr m
 
   odom.twist.twist = *msg;
 
-  // Twist covariance: higher than RF2O (vx=0.1) so EKF trusts this source less.
-  // Diagonal: vx=0.3, vy=0.3, vz=1e6(unused), vroll=1e6, vpitch=1e6, vyaw=1e6(not fused)
-  odom.twist.covariance[0]  = 0.3;
-  odom.twist.covariance[7]  = 0.3;
-  odom.twist.covariance[14] = 1e6;
-  odom.twist.covariance[21] = 1e6;
-  odom.twist.covariance[28] = 1e6;
-  odom.twist.covariance[35] = 1e6;
+  // Pose covariance: x and y only — all other fields set to 1e6 (not trusted/not fused)
+  odom.pose.covariance[0]  = 0.5;   // x
+  odom.pose.covariance[7]  = 0.5;   // y
+  odom.pose.covariance[14] = 1e6;
+  odom.pose.covariance[21] = 1e6;
+  odom.pose.covariance[28] = 1e6;
+  odom.pose.covariance[35] = 1e6;   // yaw — not fused
 
   odom_pub_->publish(odom);
 }

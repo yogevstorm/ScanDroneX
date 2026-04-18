@@ -6,8 +6,8 @@
   <!-- laser odometry (feeds EKF; TF broadcast disabled) -->
   <include file="$(find-pkg-share rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch.py"/>
 
-  <!-- EKF: fuses odom_rf2o + odom_cmd_vel into ekf_odom (required by SLAM) -->
-  <include file="$(find-pkg-share ekf_localization)/launch/ekf.launch.py"/>
+  <!-- EKF: cmd_vel as prediction model, rf2o as measurement, publishes ekf_odom -->
+  <include file="$(find-pkg-share cmd_vel_ekf)/launch/cmd_vel_ekf.launch.py"/>
 
 </launch>
 
