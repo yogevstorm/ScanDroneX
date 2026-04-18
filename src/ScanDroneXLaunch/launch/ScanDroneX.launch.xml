@@ -1,14 +1,9 @@
 <launch>
-  <arg name="use_ekf" default="false" description="Set true to enable EKF fusion (ekf_odom). Default uses odom_rf2o directly."/>
-
   <!-- slam -->
   <include file="$(find-pkg-share slam)/launch/slam.launch.py"/>
 
   <!-- laser odometry -->
   <include file="$(find-pkg-share rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch.py"/>
-
-  <!-- EKF: optional fusion of odom_rf2o + IMU into ekf_odom frame -->
-  <include if="$(var use_ekf)" file="$(find-pkg-share ekf_localization)/launch/ekf.launch.py"/>
 
 </launch>
 

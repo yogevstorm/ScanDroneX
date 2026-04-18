@@ -145,7 +145,7 @@ void CLaserOdometry2DNode::publish()
   odom.twist.twist.linear.x = rf2o_ref.lin_speed;    //linear speed
   odom.twist.twist.linear.y = 0.0;
   odom.twist.twist.angular.z = rf2o_ref.ang_speed;   //angular speed
-  // Diagonal twist covariance (vx, vyaw) — required by robot_localization EKF
+  // Diagonal twist covariance (vx, vyaw)
   odom.twist.covariance[0]  = 0.1;   // vx variance
   odom.twist.covariance[7]  = 0.1;   // vy variance
   odom.twist.covariance[14] = 1e6;   // vz (not measured)
