@@ -27,7 +27,7 @@ void MotionPlannerNode::InitSubscribers()
 
 void MotionPlannerNode::InitParams()
 {
-  m_node->declare_parameter<float>("DIS_AHEAD", 1.5);
+  m_node->declare_parameter<float>("DIS_AHEAD", 5.0);
   m_node->declare_parameter<float>("DS", 0.1);
   m_node->declare_parameter<float>("YAW_CLOSEST_IDX_TO_DRONE_WEIGHT", 2.0);
 }

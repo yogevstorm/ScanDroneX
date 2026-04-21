@@ -32,9 +32,9 @@ void BehaviorNode::InitParams()
 {
   m_node->declare_parameter<float>("COLLISION_R", 0.2);
   m_node->declare_parameter<float>("WHEEL_BASE", 0.26);
-  m_node->declare_parameter<float>("D_MAX", 1.0);
+  m_node->declare_parameter<float>("D_MAX", 3.0);
   m_node->declare_parameter<float>("Delta_D", 0.1);
-  m_node->declare_parameter<float>("MAX_LANE_LENGTH", 3.0);
+  m_node->declare_parameter<float>("MAX_LANE_LENGTH", 5.0);
   m_node->declare_parameter<float>("DS", 0.1);
   m_node->declare_parameter<float>("K_COST_D", 1.0);
   m_node->declare_parameter<float>("K_COST_WIDTH", 1.0);
