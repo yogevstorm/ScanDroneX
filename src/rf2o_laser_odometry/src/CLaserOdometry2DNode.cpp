@@ -152,13 +152,7 @@ void CLaserOdometry2DNode::publish()
   odom.pose.covariance[21] = 1e6;   // roll (not measured)
   odom.pose.covariance[28] = 1e6;   // pitch (not measured)
   odom.pose.covariance[35] = 0.02;  // yaw — tight: rf2o is dominant yaw source
-  // Twist covariance
-  odom.twist.covariance[0]  = 0.1;   // vx variance
-  odom.twist.covariance[7]  = 0.1;   // vy variance
-  odom.twist.covariance[14] = 1e6;   // vz (not measured)
-  odom.twist.covariance[21] = 1e6;   // vroll (not measured)
-  odom.twist.covariance[28] = 1e6;   // vpitch (not measured)
-  odom.twist.covariance[35] = 0.05;  // vyaw variance
+
   //publish the message
   odom_pub->publish(odom);
 

@@ -1,5 +1,4 @@
 <launch>
-
   <!-- slam -->
   <include file="$(find-pkg-share slam)/launch/slam.launch.py"/>
 

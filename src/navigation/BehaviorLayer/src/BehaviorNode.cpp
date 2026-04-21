@@ -104,7 +104,7 @@ void BehaviorNode::RunBehaviorPlanner()
   if (!m_behavior_planner.m_lane.clusters.empty())
   {
     const auto& nearest = m_behavior_planner.m_lane.clusters.front();
-    out_of_lane = (m_drone_state.d < nearest.dr || m_drone_state.d > nearest.dl);
+    out_of_lane = (m_drone_state.d < nearest.dr - 0.5 || m_drone_state.d > nearest.dl + 0.5);
   }
   std_msgs::msg::Bool out_of_lane_msg;
   out_of_lane_msg.data = out_of_lane;
