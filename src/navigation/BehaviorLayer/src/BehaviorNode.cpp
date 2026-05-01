@@ -38,6 +38,7 @@ void BehaviorNode::InitParams()
   m_node->declare_parameter<float>("DS", 0.1);
   m_node->declare_parameter<float>("K_COST_D", 1.0);
   m_node->declare_parameter<float>("K_COST_WIDTH", 1.0);
+  m_node->declare_parameter<float>("MAX_SMOOTH", 1.0);
 }
 
 void BehaviorNode::UpdateParams()
@@ -50,6 +51,7 @@ void BehaviorNode::UpdateParams()
   m_node->get_parameter("DS", m_behavior_planner.m_ds_param);
   m_node->get_parameter("K_COST_D", m_behavior_planner.m_k_cost_d_param);
   m_node->get_parameter("K_COST_WIDTH", m_behavior_planner.m_k_cost_width_param);
+  m_node->get_parameter("MAX_SMOOTH", m_behavior_planner.m_max_smooth_param);
 
 }
 

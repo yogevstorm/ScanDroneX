@@ -41,6 +41,8 @@ class BehaviorPlanner
 
     float m_k_cost_width_param = 1.0;
 
+    float m_max_smooth_param = 1.0;
+
 
   private:
 

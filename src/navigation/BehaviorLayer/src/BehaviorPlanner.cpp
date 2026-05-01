@@ -217,7 +217,7 @@ void BehaviorPlanner::DeleteInvalidNodes(LaneNode p_current_node, std::vector<La
     {
         if(!((std::get<0>(neighbor.cluster) > std::get<1>(p_current_node.cluster))
           || (std::get<1>(neighbor.cluster) < std::get<0>(p_current_node.cluster))
-          || std::get<1>(neighbor.cluster) - std::get<0>(neighbor.cluster) < 0.01))
+          || std::get<1>(neighbor.cluster) - std::get<0>(neighbor.cluster) < m_dd_param))
         {
             selected_neighbors.push_back(neighbor);
         }
@@ -309,7 +309,7 @@ void BehaviorPlanner::SmoothLane()
 {
     if(m_lane.clusters.empty()) return;
 
-    float max_smooth = 1.0;
+    float max_smooth = m_max_smooth_param;
 
     bool finish_smoothing = false;
 

@@ -8,6 +8,7 @@ BehaviorNode:
     DS: 0.1
     K_COST_D: 1.0
     K_COST_WIDTH: 1.0
+    MAX_SMOOTH: 1.5
 
 
 
