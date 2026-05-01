@@ -36,10 +36,17 @@ public:
   float m_cross_track_kd = 0.0f;
   float m_max_lateral = 0.3f;
 
+  float m_wall_avoid_k_gain  = 3.0f;
+  float m_max_wall_lateral   = 0.3f;
+  // initialized far away so avoidance is ~0 before the first lane message
+  float m_lane_dl =  100.0f;
+  float m_lane_dr = -100.0f;
+
 private:
   float PurePursuit(bool is_reverse);
   float AdaptiveSpeed();
   float CrossTrackCmd();
+  float WallAvoidanceCmd();
   int FindClosestIdx();
   int FindLookaheadIdx(int closest_idx);
   std::tuple<float, float> RelPointToDrone(float x, float y);

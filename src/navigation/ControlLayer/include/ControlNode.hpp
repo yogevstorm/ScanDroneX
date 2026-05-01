@@ -11,6 +11,7 @@
 #include "navigation_msgs/msg/dist_map_msg.hpp"
 #include "navigation_msgs/msg/path_msg.hpp"
 #include "navigation_msgs/msg/drone_state.hpp"
+#include "navigation_msgs/msg/lane.hpp"
 #include <geometry_msgs/msg/twist.hpp>
 #include "Control.hpp"
 #include <memory>
@@ -38,12 +39,14 @@ public:
 private:
   void TrajectoryCallBack(const navigation_msgs::msg::PathMsg::SharedPtr msg);
   void StateCallBack(const navigation_msgs::msg::DroneState::SharedPtr msg);
+  void LaneCallBack(const navigation_msgs::msg::Lane::SharedPtr msg);
   bool IsDroneFarFromTraj();
   void UpdateEstop();
 
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr m_pub_cmd;
   rclcpp::Subscription<navigation_msgs::msg::PathMsg>::SharedPtr m_sub_path;
   rclcpp::Subscription<navigation_msgs::msg::DroneState>::SharedPtr m_sub_state;
+  rclcpp::Subscription<navigation_msgs::msg::Lane>::SharedPtr m_sub_lane;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop_scan;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop_local_planner;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop_mission;

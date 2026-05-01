@@ -17,6 +17,8 @@ void ControlNode::InitParams()
   m_node->declare_parameter<float>("CROSS_TRACK_KI", 0.0);
   m_node->declare_parameter<float>("CROSS_TRACK_KD", 0.0);
   m_node->declare_parameter<float>("MAX_LATERAL", 0.3);
+  m_node->declare_parameter<float>("WALL_AVOID_K_GAIN", 3.0);
+  m_node->declare_parameter<float>("MAX_WALL_LATERAL", 0.3);
 
 }
 
@@ -36,6 +38,8 @@ void ControlNode::UpdateParams()
   m_node->get_parameter("CROSS_TRACK_KI", m_control.m_cross_track_ki);
   m_node->get_parameter("CROSS_TRACK_KD", m_control.m_cross_track_kd);
   m_node->get_parameter("MAX_LATERAL", m_control.m_max_lateral);
+  m_node->get_parameter("WALL_AVOID_K_GAIN", m_control.m_wall_avoid_k_gain);
+  m_node->get_parameter("MAX_WALL_LATERAL", m_control.m_max_wall_lateral);
 }
 
 void ControlNode::Init_Publishers_Subscribers()
@@ -56,6 +60,9 @@ void ControlNode::Init_Publishers_Subscribers()
   m_sub_state = m_node->create_subscription<navigation_msgs::msg::DroneState>(
     "drone_state", 1, std::bind(&ControlNode::StateCallBack, this, std::placeholders::_1)
   );
+  m_sub_lane = m_node->create_subscription<navigation_msgs::msg::Lane>(
+    "lane", 1, std::bind(&ControlNode::LaneCallBack, this, std::placeholders::_1)
+  );
   m_sub_path = m_node->create_subscription<navigation_msgs::msg::PathMsg>(
     "trajectory", 10, std::bind(&ControlNode::TrajectoryCallBack, this, std::placeholders::_1)
   );
@@ -70,6 +77,13 @@ void ControlNode::StateCallBack(const navigation_msgs::msg::DroneState::SharedPt
 {
   m_drone_state = *msg;
   m_is_recieved_state_msg = true;
+}
+
+void ControlNode::LaneCallBack(const navigation_msgs::msg::Lane::SharedPtr msg)
+{
+  if (msg->clusters.empty()) return;
+  m_control.m_lane_dl = msg->clusters[0].dl;
+  m_control.m_lane_dr = msg->clusters[0].dr;
 }
 
 bool ControlNode::SafetyRequirements()

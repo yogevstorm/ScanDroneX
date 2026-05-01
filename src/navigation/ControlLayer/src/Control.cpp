@@ -23,7 +23,9 @@ std::vector<float> Control::GetCmd(navigation_msgs::msg::DroneState drone_state,
 
   float steer = PurePursuit(is_reverse);
   float v = AdaptiveSpeed();
-  float lateral = CrossTrackCmd();
+  float cross_track = CrossTrackCmd();
+  float wall        = WallAvoidanceCmd();
+  float lateral = (std::abs(wall) > std::abs(cross_track)) ? wall : cross_track;
   if(is_reverse) v = -v;
 
   return {v, steer, lateral};
@@ -125,6 +127,18 @@ float Control::CrossTrackCmd()
   m_cross_track_pid.SetGains(m_cross_track_kp, m_cross_track_ki, m_cross_track_kd);
   m_cross_track_pid.SetOutputLimits(-m_max_lateral, m_max_lateral);
   return m_cross_track_pid.Compute(y, y, dt);
+}
+
+// Exponential repulsion from both lane margins, summed.
+// d is positive-left; dl > 0 (left wall), dr < 0 (right wall).
+// dist_right = d - dr  (small → close to right wall → push left / positive)
+// dist_left  = dl - d  (small → close to left wall  → push right / negative)
+float Control::WallAvoidanceCmd()
+{
+  float d  = m_drone_state.d;
+  float v_from_right =  m_max_wall_lateral * std::exp(-m_wall_avoid_k_gain * (d  - m_lane_dr));
+  float v_from_left  = -m_max_wall_lateral * std::exp(-m_wall_avoid_k_gain * (m_lane_dl - d));
+  return m_control_utils.Saturate(v_from_right + v_from_left, -m_max_wall_lateral, m_max_wall_lateral);
 }
 
 // Transforms world-frame point (x, y) into the drone's local frame.
