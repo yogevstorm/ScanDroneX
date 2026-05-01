@@ -17,6 +17,7 @@ void BehaviorNode::InitPublishers()
 
   m_pub_is_path_blocked  = m_node->create_publisher<std_msgs::msg::Bool>("is_path_blocked", 1);
   m_pub_is_out_of_lane   = m_node->create_publisher<std_msgs::msg::Bool>("is_out_of_lane", 1);
+  m_pub_estop            = m_node->create_publisher<std_msgs::msg::Bool>("estop/behavior", 1);
 }
 
 void BehaviorNode::InitSubscribers()
@@ -102,6 +103,10 @@ void BehaviorNode::RunBehaviorPlanner()
   blocked_msg.data = m_behavior_planner.m_is_path_blocked;
   m_pub_is_path_blocked->publish(blocked_msg);
 
+  std_msgs::msg::Bool estop_msg;
+  estop_msg.data = m_behavior_planner.m_is_path_blocked;
+  m_pub_estop->publish(estop_msg);
+
   bool out_of_lane = false;
   if (!m_behavior_planner.m_lane.clusters.empty())
   {
@@ -132,9 +137,18 @@ void BehaviorNode::VisLane()
   right_margin_mkr.color.b = 1.;
   right_margin_mkr.color.a = 1.;
 
-  end_line_mkr.color.r = 0.1;
-  end_line_mkr.color.g = 1.;
-  end_line_mkr.color.b = 0.1;
+  if(m_behavior_planner.m_is_path_blocked)
+  {
+    end_line_mkr.color.r = 1.;
+    end_line_mkr.color.g = 0.1;
+    end_line_mkr.color.b = 0.1;
+  }
+  else
+  {
+    end_line_mkr.color.r = 0.1;
+    end_line_mkr.color.g = 1.;
+    end_line_mkr.color.b = 0.1;
+  }
   end_line_mkr.color.a = 1.;
 
   right_margin_mkr.scale.x = 0.05;

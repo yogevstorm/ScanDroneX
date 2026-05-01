@@ -72,6 +72,8 @@ class BehaviorNode
 
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_is_out_of_lane;
 
+    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_estop;
+
     rclcpp::Subscription<navigation_msgs::msg::PathMsg>::SharedPtr m_sub_mission_path;
 
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_sub_state_pose;

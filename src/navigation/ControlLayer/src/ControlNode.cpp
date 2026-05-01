@@ -57,6 +57,10 @@ void ControlNode::Init_Publishers_Subscribers()
     "estop/mission", 1,
     [this](const std_msgs::msg::Bool::SharedPtr msg) { m_estop_mission = msg->data; UpdateEstop(); }
   );
+  m_sub_estop_behavior = m_node->create_subscription<std_msgs::msg::Bool>(
+    "estop/behavior", 1,
+    [this](const std_msgs::msg::Bool::SharedPtr msg) { m_estop_behavior = msg->data; UpdateEstop(); }
+  );
   m_sub_state = m_node->create_subscription<navigation_msgs::msg::DroneState>(
     "drone_state", 1, std::bind(&ControlNode::StateCallBack, this, std::placeholders::_1)
   );
@@ -70,7 +74,7 @@ void ControlNode::Init_Publishers_Subscribers()
 
 void ControlNode::UpdateEstop()
 {
-  m_estop = m_estop_scan || m_estop_local_planner || m_estop_mission;
+  m_estop = m_estop_scan || m_estop_local_planner || m_estop_mission || m_estop_behavior;
 }
 
 void ControlNode::StateCallBack(const navigation_msgs::msg::DroneState::SharedPtr msg)

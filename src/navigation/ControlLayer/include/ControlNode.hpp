@@ -50,10 +50,12 @@ private:
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop_scan;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop_local_planner;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop_mission;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop_behavior;
 
   bool m_estop_scan           = false;
   bool m_estop_local_planner  = false;
   bool m_estop_mission        = false;
+  bool m_estop_behavior       = false;
 
   navigation_msgs::msg::PathMsg m_trajectory;
   navigation_msgs::msg::DroneState m_drone_state;
