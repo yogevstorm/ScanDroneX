@@ -13,7 +13,9 @@
 #include <map>
 #include <vector>
 #include <cmath>
+#include <chrono>
 #include <ControlUtils.hpp>
+#include <Pid.hpp>
 
 class Control
 {
@@ -29,7 +31,9 @@ public:
   float m_k_gain = 1.0;
   float m_yaw_k_gain = 2.0f;
   float m_max_angular = 2.0f;
-  float m_cross_track_k_gain = 1.0f;
+  float m_cross_track_kp = 1.0f;
+  float m_cross_track_ki = 0.0f;
+  float m_cross_track_kd = 0.0f;
   float m_max_lateral = 0.3f;
 
 private:
@@ -42,6 +46,7 @@ private:
   std::vector<float> YawAlignmentCmd(float yaw_error);
 
   ControlUtils m_control_utils;
+  Pid m_cross_track_pid;
 
   navigation_msgs::msg::DroneState m_drone_state;
   navigation_msgs::msg::PathMsg m_trajectory;
@@ -49,6 +54,9 @@ private:
   int m_closest_idx = 0;
   int m_lookahead_idx = 0;
   bool m_is_rotating = false;
+
+  std::chrono::steady_clock::time_point m_last_crosstrack_time{};
+  bool m_crosstrack_initialized = false;
 
 protected:
 };

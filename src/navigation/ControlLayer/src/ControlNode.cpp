@@ -13,7 +13,9 @@ void ControlNode::InitParams()
   m_node->declare_parameter<float>("K_GAIN", 1.0);
   m_node->declare_parameter<float>("YAW_K_GAIN", 2.0);
   m_node->declare_parameter<float>("MAX_ANGULAR", 2.0);
-  m_node->declare_parameter<float>("CROSS_TRACK_K_GAIN", 1.0);
+  m_node->declare_parameter<float>("CROSS_TRACK_KP", 1.0);
+  m_node->declare_parameter<float>("CROSS_TRACK_KI", 0.0);
+  m_node->declare_parameter<float>("CROSS_TRACK_KD", 0.0);
   m_node->declare_parameter<float>("MAX_LATERAL", 0.3);
 
 }
@@ -30,7 +32,9 @@ void ControlNode::UpdateParams()
   m_node->get_parameter("K_GAIN", m_control.m_k_gain);
   m_node->get_parameter("YAW_K_GAIN", m_control.m_yaw_k_gain);
   m_node->get_parameter("MAX_ANGULAR", m_control.m_max_angular);
-  m_node->get_parameter("CROSS_TRACK_K_GAIN", m_control.m_cross_track_k_gain);
+  m_node->get_parameter("CROSS_TRACK_KP", m_control.m_cross_track_kp);
+  m_node->get_parameter("CROSS_TRACK_KI", m_control.m_cross_track_ki);
+  m_node->get_parameter("CROSS_TRACK_KD", m_control.m_cross_track_kd);
   m_node->get_parameter("MAX_LATERAL", m_control.m_max_lateral);
 }
 

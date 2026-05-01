@@ -46,6 +46,7 @@ set(utils_lib "Utils")
 add_library(${utils_lib} SHARED
   Utils/src/ControlUtils.cpp
   Utils/src/DistMap.cpp
+  Utils/src/Pid.cpp
 )
 
 set(obstacle_map_lib "ObstacleMap")

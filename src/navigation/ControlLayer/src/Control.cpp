@@ -114,7 +114,17 @@ float Control::CrossTrackCmd()
 {
   auto [x, y] = RelPointToDrone(m_trajectory.path_msg[m_closest_idx].x,
                                  m_trajectory.path_msg[m_closest_idx].y);
-  return m_control_utils.Saturate(m_cross_track_k_gain * y, -m_max_lateral, m_max_lateral);
+
+  auto now = std::chrono::steady_clock::now();
+  float dt = 0.0f;
+  if (m_crosstrack_initialized)
+    dt = std::chrono::duration<float>(now - m_last_crosstrack_time).count();
+  m_last_crosstrack_time = now;
+  m_crosstrack_initialized = true;
+
+  m_cross_track_pid.SetGains(m_cross_track_kp, m_cross_track_ki, m_cross_track_kd);
+  m_cross_track_pid.SetOutputLimits(-m_max_lateral, m_max_lateral);
+  return m_cross_track_pid.Compute(y, y, dt);
 }
 
 // Transforms world-frame point (x, y) into the drone's local frame.
