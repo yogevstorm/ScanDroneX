@@ -1,0 +1,6 @@
+ScanNode:
+  ros__parameters:
+    # Number of random unknown cells to sample per goal selection.
+    # The farthest candidate from the previous goal is chosen.
+    # Higher values spread goals further apart at the cost of more sampling.
+    SCAN_NUM_CANDIDATES: 10

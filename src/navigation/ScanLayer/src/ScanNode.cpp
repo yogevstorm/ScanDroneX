@@ -149,10 +149,20 @@ void ScanNode::PublishEstop(bool estop)
   m_pub_estop->publish(msg);
 }
 
+void ScanNode::InitParams()
+{
+  m_node->declare_parameter<int>("SCAN_NUM_CANDIDATES", 10);
+}
+
+void ScanNode::UpdateParams()
+{
+  m_node->get_parameter("SCAN_NUM_CANDIDATES", m_num_candidates);
+}
+
 void ScanNode::PublishNewGoal()
 {
   geometry_msgs::msg::PoseStamped goal;
-  if (!m_scan_layer.FindRandomGoal(m_map, goal))
+  if (!m_scan_layer.FindRandomGoal(m_map, goal, m_has_goal, m_current_goal, m_num_candidates))
   {
     RCLCPP_WARN(m_node->get_logger(), "No unknown cells remaining in map — scan complete.");
     return;
@@ -172,10 +182,12 @@ int main(int argc, char * argv[])
 
   ScanNode scan_node;
   scan_node.m_node = node;
+  scan_node.InitParams();
   scan_node.Init();
 
   while (rclcpp::ok())
   {
+    scan_node.UpdateParams();
     scan_node.Run();
     std::this_thread::sleep_for(20ms);
     rclcpp::spin_some(node);

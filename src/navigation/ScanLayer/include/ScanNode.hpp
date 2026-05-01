@@ -10,8 +10,11 @@ class ScanNode
 public:
   void Init();
   void Run();
+  void InitParams();
+  void UpdateParams();
 
   std::shared_ptr<rclcpp::Node> m_node;
+  int m_num_candidates = 10;
 
 private:
   void MapCallBack(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
