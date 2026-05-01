@@ -9,6 +9,7 @@
 #include "navigation_msgs/msg/dist_map_msg.hpp"
 #include "navigation_msgs/msg/path_msg.hpp"
 #include "navigation_msgs/msg/drone_state.hpp"
+#include "navigation_msgs/msg/lane.hpp"
 #include <memory>
 #include <map>
 #include <vector>
@@ -42,7 +43,13 @@ public:
   float m_lane_dl =  100.0f;
   float m_lane_dr = -100.0f;
 
+  float m_lane_width_min = 0.1f;   // Delta_D: narrowest expected lane → v_min
+  float m_lane_width_max = 2.0f;   // D_MAX:   widest expected lane   → v_max
+
+  void FindNarrowCluster(const navigation_msgs::msg::Lane& lane);
+
 private:
+  float m_lane_width_narrowest = 2.0f;
   float PurePursuit(bool is_reverse);
   float AdaptiveSpeed();
   float CrossTrackCmd();

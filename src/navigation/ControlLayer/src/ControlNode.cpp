@@ -19,6 +19,8 @@ void ControlNode::InitParams()
   m_node->declare_parameter<float>("MAX_LATERAL", 0.3);
   m_node->declare_parameter<float>("WALL_AVOID_K_GAIN", 3.0);
   m_node->declare_parameter<float>("MAX_WALL_LATERAL", 0.3);
+  m_node->declare_parameter<float>("D_MAX", 2.0);
+  m_node->declare_parameter<float>("Delta_D", 0.1);
 
 }
 
@@ -40,6 +42,8 @@ void ControlNode::UpdateParams()
   m_node->get_parameter("MAX_LATERAL", m_control.m_max_lateral);
   m_node->get_parameter("WALL_AVOID_K_GAIN", m_control.m_wall_avoid_k_gain);
   m_node->get_parameter("MAX_WALL_LATERAL", m_control.m_max_wall_lateral);
+  m_node->get_parameter("D_MAX", m_control.m_lane_width_max);
+  m_node->get_parameter("Delta_D", m_control.m_lane_width_min);
 }
 
 void ControlNode::Init_Publishers_Subscribers()
@@ -85,9 +89,7 @@ void ControlNode::StateCallBack(const navigation_msgs::msg::DroneState::SharedPt
 
 void ControlNode::LaneCallBack(const navigation_msgs::msg::Lane::SharedPtr msg)
 {
-  if (msg->clusters.empty()) return;
-  m_control.m_lane_dl = msg->clusters[0].dl;
-  m_control.m_lane_dr = msg->clusters[0].dr;
+  m_control.FindNarrowCluster(*msg);
 }
 
 bool ControlNode::SafetyRequirements()

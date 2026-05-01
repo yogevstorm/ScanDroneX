@@ -26,13 +26,13 @@ def generate_launch_description():
             output="screen"
         ),
 
-        # Node(
-        #     package='navigation',
-        #     executable='BehaviorNode',
-        #     name='BehaviorNode',
-        #     parameters=['/home/yogev/Desktop/ScanDroneX/src/navigation/config/behavior_params.yaml'],
-        #     output="screen"
-        # ),
+        Node(
+            package='navigation',
+            executable='BehaviorNode',
+            name='BehaviorNode',
+            parameters=['/home/yogev/Desktop/ScanDroneX/src/navigation/config/behavior_params.yaml'],
+            output="screen"
+        ),
 
         Node(
             package='navigation',

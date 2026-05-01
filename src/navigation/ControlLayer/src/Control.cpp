@@ -100,13 +100,32 @@ float Control::PurePursuit(bool is_reverse)
   return m_control_utils.Saturate(steer, -m_max_steer_angle, m_max_steer_angle);
 }
 
-// Scales speed down with path curvature at the lookahead point:
-//   v = v_max / (1 + k_gain * |k|), clamped to [v_min, v_max]
+// Speed is the minimum of two independent limits:
+//   1. Curvature-based: v = v_max / (1 + k_gain * |k|)
+//   2. Lane-width-based: linear map [width_min→v_min, width_max→v_max]
+// Both are clamped to [v_min, v_max]; the lower value takes priority.
 float Control::AdaptiveSpeed()
 {
   float k = std::abs(m_trajectory.path_msg[m_lookahead_idx].k);
-  float v = m_v_max / (1.0f + m_k_gain * k);
-  return std::max(m_v_min, std::min(m_v_max, v));
+  float v_curvature = std::max(m_v_min, std::min(m_v_max, m_v_max / (1.0f + m_k_gain * k)));
+
+  float width = m_lane_width_narrowest;
+  float t = (width - m_lane_width_min) / (m_lane_width_max - m_lane_width_min);
+  t = std::max(0.0f, std::min(1.0f, t));
+  float v_lane = m_v_min + t * (m_v_max - m_v_min);
+
+  return std::min(v_curvature, v_lane);
+}
+
+void Control::FindNarrowCluster(const navigation_msgs::msg::Lane& lane)
+{
+  if (lane.clusters.empty()) return;
+  m_lane_dl = lane.clusters[0].dl;
+  m_lane_dr = lane.clusters[0].dr;
+  float min_width = lane.clusters[0].dl - lane.clusters[0].dr;
+  for (const auto& c : lane.clusters)
+    min_width = std::min(min_width, c.dl - c.dr);
+  m_lane_width_narrowest = min_width;
 }
 
 // Computes lateral (strafe) velocity to correct cross-track error.
