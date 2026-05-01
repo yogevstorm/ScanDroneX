@@ -74,6 +74,8 @@ class BehaviorNode
 
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_estop;
 
+    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_lane_end;
+
     rclcpp::Subscription<navigation_msgs::msg::PathMsg>::SharedPtr m_sub_mission_path;
 
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr m_sub_state_pose;
@@ -96,6 +98,8 @@ class BehaviorNode
     bool m_is_recieved_m_path = false;
 
     bool m_is_recieved_dist_map = false;
+
+    bool m_lane_end_triggered = false;
 
   protected:
     

@@ -6,9 +6,9 @@ BehaviorNode:
     Delta_D: 0.1
     MAX_LANE_LENGTH: 5.0
     DS: 0.1
-    K_COST_D: 1.0
-    K_COST_WIDTH: 1.0
-    MAX_SMOOTH: 1.5
+    K_COST_D: 0.5
+    K_COST_WIDTH: 2.0
+    MAX_SMOOTH: 2.0
 
 
 

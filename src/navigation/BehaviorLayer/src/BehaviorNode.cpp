@@ -18,6 +18,7 @@ void BehaviorNode::InitPublishers()
   m_pub_is_path_blocked  = m_node->create_publisher<std_msgs::msg::Bool>("is_path_blocked", 1);
   m_pub_is_out_of_lane   = m_node->create_publisher<std_msgs::msg::Bool>("is_out_of_lane", 1);
   m_pub_estop            = m_node->create_publisher<std_msgs::msg::Bool>("estop/behavior", 1);
+  m_pub_lane_end         = m_node->create_publisher<std_msgs::msg::Bool>("lane_end", 1);
 }
 
 void BehaviorNode::InitSubscribers()
@@ -99,12 +100,29 @@ void BehaviorNode::RunBehaviorPlanner()
 
   m_pub_lane->publish(m_behavior_planner.m_lane);
 
+  std_msgs::msg::Bool lane_end_msg;
+  if (m_behavior_planner.m_lane.clusters.size() < 2.0f / m_behavior_planner.m_ds_param)
+  {
+    if (!m_lane_end_triggered)
+    {
+      lane_end_msg.data = true;
+      m_pub_lane_end->publish(lane_end_msg);
+      m_lane_end_triggered = true;
+    }
+  }
+  else if (m_lane_end_triggered)
+  {
+    lane_end_msg.data = false;
+    m_pub_lane_end->publish(lane_end_msg);
+    m_lane_end_triggered = false;
+  }
+
   std_msgs::msg::Bool blocked_msg;
   blocked_msg.data = m_behavior_planner.m_is_path_blocked;
   m_pub_is_path_blocked->publish(blocked_msg);
 
   std_msgs::msg::Bool estop_msg;
-  estop_msg.data = m_behavior_planner.m_is_path_blocked;
+  estop_msg.data = m_behavior_planner.m_is_path_blocked || m_lane_end_triggered;
   m_pub_estop->publish(estop_msg);
 
   bool out_of_lane = false;
