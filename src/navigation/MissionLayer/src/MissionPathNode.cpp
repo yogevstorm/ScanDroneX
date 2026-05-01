@@ -24,7 +24,7 @@ void MissionPathNode::Init_Publishers_Subscribers()
   m_pub_dist_map =
       m_node->create_publisher<navigation_msgs::msg::DistMapMsg>("dist_map", 1);
 
-  m_pub_estop = m_node->create_publisher<std_msgs::msg::Bool>("estop", 1);
+  m_pub_estop = m_node->create_publisher<std_msgs::msg::Bool>("estop/mission", 1);
 
   m_pub_is_destination = m_node->create_publisher<std_msgs::msg::Bool>("is_destination", 1);
 
@@ -169,10 +169,10 @@ void MissionPathNode::ESTOPCollisonR()
     esp_collision_r_pnts_viz.markers.push_back(collision_r_pnt_viz);
 
     int map_cell_id = m_distmap.World2Map1D(m_dist_map.info, collision_pnt);
-    if(m_dist_map.data[map_cell_id] < m_esp_collision_r)
-    {
-      PubEstop(true);
-    }
+    // if(m_dist_map.data[map_cell_id] < m_esp_collision_r)
+    // {
+    //   PubEstop(true);
+    // }
   }
 
   m_pub_esp_collision_r_vis->publish(esp_collision_r_pnts_viz);

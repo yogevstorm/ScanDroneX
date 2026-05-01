@@ -11,7 +11,7 @@ void LocalPlannerNode::Init()
 void LocalPlannerNode::InitPublishers()
 {
   m_pub_local_path       = m_node->create_publisher<navigation_msgs::msg::PathMsg>("local_path", 1);
-  m_pub_estop            = m_node->create_publisher<std_msgs::msg::Bool>("estop", false);
+  m_pub_estop            = m_node->create_publisher<std_msgs::msg::Bool>("estop/local_planner", false);
   m_pub_path_vis         = m_node->create_publisher<visualization_msgs::msg::MarkerArray>("road_path_vis", 1);
   m_pub_is_destination   = m_node->create_publisher<std_msgs::msg::Bool>("lane_end", 1);
 }

@@ -37,8 +37,17 @@ void ControlNode::UpdateParams()
 void ControlNode::Init_Publishers_Subscribers()
 {
   m_pub_cmd = m_node->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 1);
-  m_sub_estop = m_node->create_subscription<std_msgs::msg::Bool>(
-    "estop", 1, std::bind(&ControlNode::EstopCallBack, this, std::placeholders::_1)
+  m_sub_estop_scan = m_node->create_subscription<std_msgs::msg::Bool>(
+    "estop/scan", 1,
+    [this](const std_msgs::msg::Bool::SharedPtr msg) { m_estop_scan = msg->data; UpdateEstop(); }
+  );
+  m_sub_estop_local_planner = m_node->create_subscription<std_msgs::msg::Bool>(
+    "estop/local_planner", 1,
+    [this](const std_msgs::msg::Bool::SharedPtr msg) { m_estop_local_planner = msg->data; UpdateEstop(); }
+  );
+  m_sub_estop_mission = m_node->create_subscription<std_msgs::msg::Bool>(
+    "estop/mission", 1,
+    [this](const std_msgs::msg::Bool::SharedPtr msg) { m_estop_mission = msg->data; UpdateEstop(); }
   );
   m_sub_state = m_node->create_subscription<navigation_msgs::msg::DroneState>(
     "drone_state", 1, std::bind(&ControlNode::StateCallBack, this, std::placeholders::_1)
@@ -48,9 +57,9 @@ void ControlNode::Init_Publishers_Subscribers()
   );
 }
 
-void ControlNode::EstopCallBack(const std_msgs::msg::Bool::SharedPtr msg) 
+void ControlNode::UpdateEstop()
 {
-  m_estop = msg->data;
+  m_estop = m_estop_scan || m_estop_local_planner || m_estop_mission;
 }
 
 void ControlNode::StateCallBack(const navigation_msgs::msg::DroneState::SharedPtr msg)

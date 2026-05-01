@@ -4,7 +4,7 @@ using namespace std::chrono_literals;
 void ScanNode::Init()
 {
   m_pub_goal_pose = m_node->create_publisher<geometry_msgs::msg::PoseStamped>("goal_pose", 1);
-  m_pub_estop     = m_node->create_publisher<std_msgs::msg::Bool>("estop", 1);
+  m_pub_estop     = m_node->create_publisher<std_msgs::msg::Bool>("estop/scan", 1);
 
   m_sub_map = m_node->create_subscription<nav_msgs::msg::OccupancyGrid>(
       "/map", 1, std::bind(&ScanNode::MapCallBack, this, std::placeholders::_1));

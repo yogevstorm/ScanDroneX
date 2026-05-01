@@ -38,13 +38,19 @@ public:
 private:
   void TrajectoryCallBack(const navigation_msgs::msg::PathMsg::SharedPtr msg);
   void StateCallBack(const navigation_msgs::msg::DroneState::SharedPtr msg);
-  void EstopCallBack(const std_msgs::msg::Bool::SharedPtr msg);
   bool IsDroneFarFromTraj();
+  void UpdateEstop();
 
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr m_pub_cmd;
   rclcpp::Subscription<navigation_msgs::msg::PathMsg>::SharedPtr m_sub_path;
   rclcpp::Subscription<navigation_msgs::msg::DroneState>::SharedPtr m_sub_state;
-  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop_scan;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop_local_planner;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_estop_mission;
+
+  bool m_estop_scan           = false;
+  bool m_estop_local_planner  = false;
+  bool m_estop_mission        = false;
 
   navigation_msgs::msg::PathMsg m_trajectory;
   navigation_msgs::msg::DroneState m_drone_state;
