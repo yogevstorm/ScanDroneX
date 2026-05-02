@@ -37,7 +37,7 @@ void CmdVelOdomNode::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr m
   nav_msgs::msg::Odometry odom;
   odom.header.stamp    = current_time;
   odom.header.frame_id = "odom_cmd_vel";
-  odom.child_frame_id  = "base_link";
+  odom.child_frame_id  = "simple_drone/base_footprint";
 
   odom.pose.pose.position.x    = x_;
   odom.pose.pose.position.y    = y_;
@@ -51,11 +51,11 @@ void CmdVelOdomNode::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr m
 
   odom_pub_->publish(odom);
 
-  // Broadcast TF: odom_cmd_vel -> base_link
+  // Broadcast TF: odom_cmd_vel -> simple_drone/base_footprint
   geometry_msgs::msg::TransformStamped tf;
   tf.header.stamp    = current_time;
   tf.header.frame_id = "odom_cmd_vel";
-  tf.child_frame_id  = "base_link";
+  tf.child_frame_id  = "simple_drone/base_footprint";
 
   tf.transform.translation.x = x_;
   tf.transform.translation.y = y_;

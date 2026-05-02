@@ -5,5 +5,10 @@
   <!-- laser odometry -->
   <include file="$(find-pkg-share rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch.py"/>
 
+  <!-- cmd_vel odometry -->
+  <!-- <node pkg="cmd_vel_odom" exec="cmd_vel_odom_node" name="cmd_vel_odom_node">
+    <param name="use_sim_time" value="true"/>
+  </node> -->
+
 </launch>
 
