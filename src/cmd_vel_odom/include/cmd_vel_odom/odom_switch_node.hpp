@@ -12,16 +12,23 @@ public:
   OdomSwitchNode();
 
 private:
+  enum class Source { RF2O, CMD_VEL };
+
   void rf2oCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
   void cmdVelOdomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
   void disagreementCallback(const std_msgs::msg::Float32::SharedPtr msg);
+  void switchTo(Source next, const nav_msgs::msg::Odometry::SharedPtr & incoming);
   void publish(const nav_msgs::msg::Odometry::SharedPtr & odom);
 
-  enum class Source { RF2O, CMD_VEL };
   Source active_source_{Source::RF2O};
 
   nav_msgs::msg::Odometry::SharedPtr latest_rf2o_;
   nav_msgs::msg::Odometry::SharedPtr latest_cmd_vel_;
+
+  // Offset state for seamless switching
+  double base_x_{0.0}, base_y_{0.0};   // last published position at switch time
+  double ref_x_{0.0},  ref_y_{0.0};    // new source's position at switch time
+  double last_pub_x_{0.0}, last_pub_y_{0.0};
 
   double threshold_high_{0.8};
   double threshold_low_{0.2};

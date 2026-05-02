@@ -12,9 +12,21 @@ CmdVelOdomNode::CmdVelOdomNode()
     "/simple_drone/cmd_vel", 10,
     std::bind(&CmdVelOdomNode::cmdVelCallback, this, std::placeholders::_1));
 
+  rf2o_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
+    "/odom_rf2o", 10,
+    std::bind(&CmdVelOdomNode::rf2oCallback, this, std::placeholders::_1));
+
   odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom_cmd_vel", 10);
 
   tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+}
+
+void CmdVelOdomNode::rf2oCallback(const nav_msgs::msg::Odometry::SharedPtr msg)
+{
+  const auto & q = msg->pose.pose.orientation;
+  rf2o_yaw_ = std::atan2(2.0 * (q.w * q.z + q.x * q.y),
+                          1.0 - 2.0 * (q.y * q.y + q.z * q.z));
+  rf2o_received_ = true;
 }
 
 void CmdVelOdomNode::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
@@ -23,15 +35,15 @@ void CmdVelOdomNode::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr m
   double dt = (current_time - last_time_).seconds();
   last_time_ = current_time;
 
-  // Rotate body-frame velocities into the world frame using current yaw,
-  // then integrate to get world-frame position
-  x_   += (msg->linear.x * std::cos(yaw_) - msg->linear.y * std::sin(yaw_)) * dt;
-  y_   += (msg->linear.x * std::sin(yaw_) + msg->linear.y * std::cos(yaw_)) * dt;
-  z_   += msg->linear.z * dt;
   yaw_ += msg->angular.z * dt;
+  const double active_yaw = rf2o_received_ ? rf2o_yaw_ : yaw_;
+
+  x_ += (msg->linear.x * std::cos(active_yaw) - msg->linear.y * std::sin(active_yaw)) * dt;
+  y_ += (msg->linear.x * std::sin(active_yaw) + msg->linear.y * std::cos(active_yaw)) * dt;
+  z_ += msg->linear.z * dt;
 
   tf2::Quaternion q;
-  q.setRPY(0.0, 0.0, yaw_);
+  q.setRPY(0.0, 0.0, active_yaw);
 
   // Publish odometry message
   nav_msgs::msg::Odometry odom;

@@ -64,6 +64,7 @@ target_include_directories(odom_switch_node PUBLIC
 
 ament_target_dependencies(odom_switch_node
   rclcpp
+  geometry_msgs
   nav_msgs
   std_msgs
   tf2_ros

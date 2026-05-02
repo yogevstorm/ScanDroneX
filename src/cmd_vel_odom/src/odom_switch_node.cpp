@@ -4,7 +4,7 @@
 OdomSwitchNode::OdomSwitchNode()
 : Node("odom_switch_node")
 {
-  threshold_high_ = this->declare_parameter<double>("threshold_high", 0.8);
+  threshold_high_ = this->declare_parameter<double>("threshold_high", 0.9);
   threshold_low_  = this->declare_parameter<double>("threshold_low",  0.2);
 
   rf2o_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
@@ -24,22 +24,32 @@ OdomSwitchNode::OdomSwitchNode()
   tf_broadcaster_  = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 }
 
+void OdomSwitchNode::switchTo(Source next, const nav_msgs::msg::Odometry::SharedPtr & incoming)
+{
+  base_x_ = last_pub_x_;
+  base_y_ = last_pub_y_;
+  ref_x_  = incoming->pose.pose.position.x;
+  ref_y_  = incoming->pose.pose.position.y;
+  active_source_ = next;
+}
+
 void OdomSwitchNode::disagreementCallback(const std_msgs::msg::Float32::SharedPtr msg)
 {
   const float val = msg->data;
-  if (val > static_cast<float>(threshold_high_)) {
-    if (active_source_ != Source::CMD_VEL) {
+
+  if (val > static_cast<float>(threshold_high_) && active_source_ != Source::CMD_VEL) {
+    if (latest_cmd_vel_) {
       RCLCPP_INFO(this->get_logger(),
         "[odom_switch] disagreement=%.3f > %.2f → switching to odom_cmd_vel",
         val, threshold_high_);
-      active_source_ = Source::CMD_VEL;
+      switchTo(Source::CMD_VEL, latest_cmd_vel_);
     }
-  } else if (val < static_cast<float>(threshold_low_)) {
-    if (active_source_ != Source::RF2O) {
+  } else if (val < static_cast<float>(threshold_low_) && active_source_ != Source::RF2O) {
+    if (latest_rf2o_) {
       RCLCPP_INFO(this->get_logger(),
         "[odom_switch] disagreement=%.3f < %.2f → switching to odom_rf2o",
         val, threshold_low_);
-      active_source_ = Source::RF2O;
+      switchTo(Source::RF2O, latest_rf2o_);
     }
   }
   // between thresholds: hold current selection
@@ -67,8 +77,25 @@ void OdomSwitchNode::cmdVelOdomCallback(const nav_msgs::msg::Odometry::SharedPtr
 
 void OdomSwitchNode::publish(const nav_msgs::msg::Odometry::SharedPtr & odom)
 {
-  nav_msgs::msg::Odometry out = *odom;
+  if (!latest_rf2o_) {
+    return;  // need rf2o for yaw
+  }
+
+  nav_msgs::msg::Odometry out;
+  out.header.stamp    = odom->header.stamp;
   out.header.frame_id = "odom_switch";
+  out.child_frame_id  = odom->child_frame_id;
+
+  // Offset-corrected 2D position: continue from last published pose
+  out.pose.pose.position.x = base_x_ + (odom->pose.pose.position.x - ref_x_);
+  out.pose.pose.position.y = base_y_ + (odom->pose.pose.position.y - ref_y_);
+  out.pose.pose.position.z = odom->pose.pose.position.z;
+
+  // Yaw always from rf2o
+  out.pose.pose.orientation = latest_rf2o_->pose.pose.orientation;
+
+  last_pub_x_ = out.pose.pose.position.x;
+  last_pub_y_ = out.pose.pose.position.y;
 
   odom_switch_pub_->publish(out);
 
