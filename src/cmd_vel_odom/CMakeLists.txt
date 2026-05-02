@@ -13,6 +13,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
@@ -34,7 +35,24 @@ ament_target_dependencies(cmd_vel_odom_node
   tf2_ros
 )
 
-install(TARGETS cmd_vel_odom_node
+add_executable(odom_disagreement_node
+  src/odom_disagreement_main.cpp
+  src/odom_disagreement_node.cpp
+)
+
+target_include_directories(odom_disagreement_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+ament_target_dependencies(odom_disagreement_node
+  rclcpp
+  geometry_msgs
+  nav_msgs
+  std_msgs
+)
+
+install(TARGETS cmd_vel_odom_node odom_disagreement_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
