@@ -2,28 +2,69 @@
 #include <cmath>
 #include <numeric>
 
+static double yaw_from_quat(const geometry_msgs::msg::Quaternion & q)
+{
+  return std::atan2(2.0 * (q.w * q.z + q.x * q.y),
+                    1.0 - 2.0 * (q.y * q.y + q.z * q.z));
+}
+
 OdomDisagreementNode::OdomDisagreementNode()
 : Node("odom_disagreement_node")
 {
-  cmd_vel_sub_ = this->create_subscription<geometry_msgs::msg::Twist>(
-    "/simple_drone/cmd_vel", 10,
-    std::bind(&OdomDisagreementNode::cmdVelCallback, this, std::placeholders::_1));
+  min_cmd_vx_ = this->declare_parameter<double>("min_cmd_vx", 0.2);
+
+  cmd_vel_odom_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
+    "/odom_cmd_vel", 10,
+    std::bind(&OdomDisagreementNode::cmdVelOdomCallback, this, std::placeholders::_1));
 
   rf2o_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
     "/odom_rf2o", 10,
     std::bind(&OdomDisagreementNode::rf2oCallback, this, std::placeholders::_1));
 
-  min_cmd_vx_ = this->declare_parameter<double>("min_cmd_vx", 0.2);
-
   linear_pub_  = this->create_publisher<std_msgs::msg::Float32>("/odom_disagreement/linear",  10);
   angular_pub_ = this->create_publisher<std_msgs::msg::Float32>("/odom_disagreement/angular", 10);
 }
 
-void OdomDisagreementNode::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
+void OdomDisagreementNode::cmdVelOdomCallback(const nav_msgs::msg::Odometry::SharedPtr msg)
 {
-  cmd_vx_ = msg->linear.x;
-  cmd_vy_ = msg->linear.y;
-  cmd_wz_ = msg->angular.z;
+  const double x   = msg->pose.pose.position.x;
+  const double y   = msg->pose.pose.position.y;
+  const double yaw = yaw_from_quat(msg->pose.pose.orientation);
+  const rclcpp::Time stamp = msg->header.stamp;
+
+  if (!has_prev_cmd_) {
+    prev_cmd_x_    = x;
+    prev_cmd_y_    = y;
+    prev_cmd_yaw_  = yaw;
+    prev_cmd_stamp_ = stamp;
+    has_prev_cmd_  = true;
+    return;
+  }
+
+  const double dt = (stamp - prev_cmd_stamp_).seconds();
+  if (dt <= 0.0) {
+    return;
+  }
+
+  // World-frame velocity from finite difference
+  const double vx_world = (x   - prev_cmd_x_)   / dt;
+  const double vy_world = (y   - prev_cmd_y_)    / dt;
+
+  // Yaw rate — normalize dyaw to [-pi, pi] before dividing
+  double dyaw = yaw - prev_cmd_yaw_;
+  if (dyaw >  M_PI) dyaw -= 2.0 * M_PI;
+  if (dyaw < -M_PI) dyaw += 2.0 * M_PI;
+
+  prev_cmd_x_    = x;
+  prev_cmd_y_    = y;
+  prev_cmd_yaw_  = yaw;
+  prev_cmd_stamp_ = stamp;
+
+  // Rotate world-frame velocity into body frame (transpose of rotation matrix)
+  cmd_vx_ =  vx_world * std::cos(yaw) + vy_world * std::sin(yaw);
+  cmd_vy_ = -vx_world * std::sin(yaw) + vy_world * std::cos(yaw);
+  cmd_wz_ = dyaw / dt;
+
   cmd_received_ = true;
   compute();
 }
@@ -60,8 +101,7 @@ void OdomDisagreementNode::compute()
     return;
   }
 
-  float linear_raw  = std::sqrt(std::pow(cmd_vx_ - rf2o_vx_, 2) +
-                                 std::pow(cmd_vy_ - rf2o_vy_, 2));
+  float linear_raw  = std::sqrt(std::pow(cmd_vx_ - rf2o_vx_, 2));
   float angular_raw = std::abs(cmd_wz_ - rf2o_wz_);
 
   float linear_avg  = window_average(linear_window_,  linear_raw,  WINDOW);
