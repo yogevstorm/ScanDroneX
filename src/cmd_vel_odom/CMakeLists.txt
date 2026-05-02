@@ -52,7 +52,24 @@ ament_target_dependencies(odom_disagreement_node
   std_msgs
 )
 
-install(TARGETS cmd_vel_odom_node odom_disagreement_node
+add_executable(odom_switch_node
+  src/odom_switch_main.cpp
+  src/odom_switch_node.cpp
+)
+
+target_include_directories(odom_switch_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+ament_target_dependencies(odom_switch_node
+  rclcpp
+  nav_msgs
+  std_msgs
+  tf2_ros
+)
+
+install(TARGETS cmd_vel_odom_node odom_disagreement_node odom_switch_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

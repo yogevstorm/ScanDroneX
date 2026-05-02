@@ -10,5 +10,15 @@
     <param name="use_sim_time" value="true"/>
   </node>
 
+  <!-- odom disagreement monitor -->
+  <node pkg="cmd_vel_odom" exec="odom_disagreement_node" name="odom_disagreement_node">
+    <param name="use_sim_time" value="true"/>
+  </node>
+
+  <!-- odom switch (rf2o <-> cmd_vel hysteresis) -->
+  <node pkg="cmd_vel_odom" exec="odom_switch_node" name="odom_switch_node">
+    <param name="use_sim_time" value="true"/>
+  </node>
+
 </launch>
 

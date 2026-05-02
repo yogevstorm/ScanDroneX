@@ -11,7 +11,8 @@ slam_toolbox:
 
     # ROS Parameters
     # odom_frame: odom_cmd_vel
-    odom_frame: odom_lidar
+    # odom_frame: odom_lidar
+    odom_frame: odom_switch
     map_frame: map
     base_frame: simple_drone/base_footprint
     scan_topic: /simple_drone/scan
