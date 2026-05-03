@@ -18,13 +18,13 @@ def generate_launch_description():
             output="screen"
         ),
 
-        # Node(
-        #     package='navigation',
-        #     executable='MissionPathNode',
-        #     name='MissionPathNode',
-        #     parameters=['/home/yogev/Desktop/ScanDroneX/src/navigation/config/mission_planner_params.yaml'],
-        #     output="screen"
-        # ),
+        Node(
+            package='navigation',
+            executable='MissionPathNode',
+            name='MissionPathNode',
+            parameters=['/home/yogev/Desktop/ScanDroneX/src/navigation/config/mission_planner_params.yaml'],
+            output="screen"
+        ),
 
         Node(
             package='navigation',

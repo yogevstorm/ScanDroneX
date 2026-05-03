@@ -113,8 +113,6 @@ navigation_msgs::msg::PathMsg Astar::Search(navigation_msgs::msg::DistMapMsg dis
         std::chrono::steady_clock::now() - search_start).count();
     if(elapsed > m_search_timeout_sec)
     {
-      RCLCPP_WARN(m_node->get_logger(),
-                  "A* search timed out after %.1f seconds", elapsed);
       return navigation_msgs::msg::PathMsg{};
     }
 

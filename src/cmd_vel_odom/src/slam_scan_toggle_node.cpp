@@ -33,19 +33,13 @@ void SlamScanToggleNode::setScanMatching(bool enabled)
 
   auto req = std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
 
-  rcl_interfaces::msg::Parameter p1;
-  p1.name = "use_scan_matching";
-  p1.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_BOOL;
-  p1.value.bool_value = enabled;
+  rcl_interfaces::msg::Parameter p;
+  p.name = "use_scan_matching";
+  p.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_BOOL;
+  p.value.bool_value = enabled;
 
-  // rcl_interfaces::msg::Parameter p2;
-  // p2.name = "do_loop_closing";
-  // p2.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_BOOL;
-  // p2.value.bool_value = enabled;
-
-  req->parameters = {p1};
+  req->parameters = {p};
 
   client_->async_send_request(req);
-  RCLCPP_INFO(get_logger(), "use_scan_matching=%s do_loop_closing=%s",
-    enabled ? "true" : "false", enabled ? "true" : "false");
+  RCLCPP_INFO(get_logger(), "use_scan_matching -> %s", enabled ? "true" : "false");
 }
