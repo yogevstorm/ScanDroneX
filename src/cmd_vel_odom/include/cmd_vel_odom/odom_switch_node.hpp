@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <rclcpp/rclcpp.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <std_msgs/msg/float32.hpp>
@@ -32,6 +33,10 @@ private:
 
   double threshold_high_{0.8};
   double threshold_low_{0.2};
+  double switch_delay_sec_{5.0};
+
+  std::optional<rclcpp::Time> high_since_;
+  std::optional<rclcpp::Time> low_since_;
 
   rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr rf2o_sub_;
   rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr cmd_vel_odom_sub_;

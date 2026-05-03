@@ -4,8 +4,9 @@
 OdomSwitchNode::OdomSwitchNode()
 : Node("odom_switch_node")
 {
-  threshold_high_ = this->declare_parameter<double>("threshold_high", 0.5);
-  threshold_low_  = this->declare_parameter<double>("threshold_low",  0.1);
+  threshold_high_   = this->declare_parameter<double>("threshold_high",   0.4);
+  threshold_low_    = this->declare_parameter<double>("threshold_low",    0.1);
+  switch_delay_sec_ = this->declare_parameter<double>("switch_delay_sec", 2.0);
 
   rf2o_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
     "/odom_rf2o", 10,
@@ -36,23 +37,41 @@ void OdomSwitchNode::switchTo(Source next, const nav_msgs::msg::Odometry::Shared
 void OdomSwitchNode::disagreementCallback(const std_msgs::msg::Float32::SharedPtr msg)
 {
   const float val = msg->data;
+  const rclcpp::Time now = this->now();
 
+  // High condition: disagreement sustained above threshold → switch to CMD_VEL
   if (val > static_cast<float>(threshold_high_) && active_source_ != Source::CMD_VEL) {
-    if (latest_cmd_vel_) {
-      RCLCPP_INFO(this->get_logger(),
-        "[odom_switch] disagreement=%.3f > %.2f → switching to odom_cmd_vel",
-        val, threshold_high_);
-      switchTo(Source::CMD_VEL, latest_cmd_vel_);
+    if (!high_since_) {
+      high_since_ = now;
+    } else if ((now - *high_since_).seconds() >= switch_delay_sec_) {
+      if (latest_cmd_vel_) {
+        RCLCPP_INFO(this->get_logger(),
+          "[odom_switch] disagreement=%.3f > %.2f for %.1fs → switching to odom_cmd_vel",
+          val, threshold_high_, switch_delay_sec_);
+        switchTo(Source::CMD_VEL, latest_cmd_vel_);
+        high_since_ = std::nullopt;
+      }
     }
-  } else if (val < static_cast<float>(threshold_low_) && active_source_ != Source::RF2O) {
-    if (latest_rf2o_) {
-      RCLCPP_INFO(this->get_logger(),
-        "[odom_switch] disagreement=%.3f < %.2f → switching to odom_rf2o",
-        val, threshold_low_);
-      switchTo(Source::RF2O, latest_rf2o_);
-    }
+  } else {
+    high_since_ = std::nullopt;
   }
-  // between thresholds: hold current selection
+
+  // Low condition: disagreement sustained below threshold → switch to RF2O
+  if (val < static_cast<float>(threshold_low_) && active_source_ != Source::RF2O) {
+    if (!low_since_) {
+      low_since_ = now;
+    } else if ((now - *low_since_).seconds() >= switch_delay_sec_) {
+      if (latest_rf2o_) {
+        RCLCPP_INFO(this->get_logger(),
+          "[odom_switch] disagreement=%.3f < %.2f for %.1fs → switching to odom_rf2o",
+          val, threshold_low_, switch_delay_sec_);
+        switchTo(Source::RF2O, latest_rf2o_);
+        low_since_ = std::nullopt;
+      }
+    }
+  } else {
+    low_since_ = std::nullopt;
+  }
 
   std_msgs::msg::Bool source_msg;
   source_msg.data = (active_source_ == Source::CMD_VEL);
