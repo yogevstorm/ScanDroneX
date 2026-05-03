@@ -27,7 +27,7 @@ ControlNode:
     MAX_WALL_LATERAL: 0.4
     V_MAX: 0.8
     V_MIN: 0.2
-    D_MAX: 2.0
+    D_MAX: 1.0
     Delta_D: 0.1
 
 

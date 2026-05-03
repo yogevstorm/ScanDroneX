@@ -5,6 +5,7 @@
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include "navigation_msgs/msg/world_point.hpp"
 #include "navigation_msgs/msg/path_msg.hpp"
+#include <chrono>
 #include <memory>
 #include <queue>
 #include <unordered_map>
@@ -29,9 +30,10 @@ public:
                                        geometry_msgs::msg::Pose start,
                                        geometry_msgs::msg::Pose end);
 
-  float m_collision_r      = 0.15f;
-  int   m_step_size        = 3;      // cells per step (3 * 0.05m = 0.15m/step)
-  float m_heuristic_weight = 2.0f;   // >1 trades optimality for speed
+  float  m_collision_r        = 0.15f;
+  int    m_step_size          = 3;      // cells per step (3 * 0.05m = 0.15m/step)
+  float  m_heuristic_weight   = 2.0f;   // >1 trades optimality for speed
+  double m_search_timeout_sec = 10.0;
 
 private:
   float GetHeuristic(Node node);

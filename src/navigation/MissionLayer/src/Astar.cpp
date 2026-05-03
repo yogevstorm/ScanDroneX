@@ -105,8 +105,19 @@ navigation_msgs::msg::PathMsg Astar::Search(navigation_msgs::msg::DistMapMsg dis
   const float straight_cost = m_step_size * dist_map.info.resolution;
   const float diag_cost     = m_step_size * (float)M_SQRT2 * dist_map.info.resolution;
 
+  const auto search_start = std::chrono::steady_clock::now();
+
   while(!open_pq.empty())
   {
+    double elapsed = std::chrono::duration<double>(
+        std::chrono::steady_clock::now() - search_start).count();
+    if(elapsed > m_search_timeout_sec)
+    {
+      RCLCPP_WARN(m_node->get_logger(),
+                  "A* search timed out after %.1f seconds", elapsed);
+      return navigation_msgs::msg::PathMsg{};
+    }
+
     Node current = open_pq.top();
     open_pq.pop();
 

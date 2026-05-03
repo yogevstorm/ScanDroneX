@@ -101,7 +101,7 @@ void OdomDisagreementNode::compute()
     return;
   }
 
-  float linear_raw  = std::sqrt(std::pow(cmd_vx_ - rf2o_vx_, 2));
+  float linear_raw  = std::sqrt(std::pow(cmd_vx_ - rf2o_vx_, 2) + std::pow(cmd_vy_ - rf2o_vy_, 2));
   float angular_raw = std::abs(cmd_wz_ - rf2o_wz_);
 
   float linear_avg  = window_average(linear_window_,  linear_raw,  WINDOW);
