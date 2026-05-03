@@ -2,7 +2,7 @@ BehaviorNode:
   ros__parameters:
     COLLISION_R: 0.2
     WHEEL_BASE: 0.26
-    D_MAX: 3.0
+    D_MAX: 4.0
     Delta_D: 0.1
     MAX_LANE_LENGTH: 5.0
     DS: 0.1

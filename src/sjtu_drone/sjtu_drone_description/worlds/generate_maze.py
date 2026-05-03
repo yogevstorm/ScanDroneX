@@ -40,43 +40,82 @@ import os
 #     "###########",   # outer bottom wall
 # ]
 
-# MAZE = [
-#     "###############",   # outer top wall
-#     "#   S     #   #",   # Room 1 (top-left) | Room 2 (top-right)
-#     "#         #   #",
-#     "#         #   #",
-#     "#         #   #",
-#     "### ######## ##",   # wall: door at col 3 (Room 1) | door at col 14 (Room 2)
-#     "#             #",   # long horizontal corridor — drone starts at left end
-#     "##### ###### ##",   # wall: door at col 5 (Room 3) | door at col 16 (Room 4)
-#     "#         #   #",   # Room 3 (bot-left) | Room 4 (bot-right)
-#     "#         #   #",
-#     "#         #   #",
-#     "#         #   #",
-#     "###############",   # outer bottom wall
-# ]
+MAZE = [
+    "###############",   # outer top wall
+    "#   S     #   #",   # Room 1 (top-left) | Room 2 (top-right)
+    "#         #   #",
+    "#         #   #",
+    "#         #   #",
+    "### ######## ##",   # wall: door at col 3 (Room 1) | door at col 14 (Room 2)
+    "#             #",   # long horizontal corridor — drone starts at left end
+    "##### ###### ##",   # wall: door at col 5 (Room 3) | door at col 16 (Room 4)
+    "#         #   #",   # Room 3 (bot-left) | Room 4 (bot-right)
+    "#         #   #",
+    "#         #   #",
+    "#         #   #",
+    "###############",   # outer bottom wall
+]
 
 ##########
-MAZE = [
-    "####################################",   # outer top wall
-    "#   S     ######################   #",   # Room 1 (top-left) | Room 2 (top-right)
-    "#         ######################   #",
-    "#         ######################   #",
-    "#         ######################   #",
-    "### ############################# ##",   # wall: door at col 3 (Room 1) | door at col 14 (Room 2)
-    "#                                  #",   # long horizontal corridor — drone starts at left end
-    "##### ########################### ##",   # wall: door at col 5 (Room 3) | door at col 16 (Room 4)
-    "#         ######################   #",   # Room 3 (bot-left) | Room 4 (bot-right)
-    "#         ######################   #",
-    "#         ######################   #",
-    "#         ######################   #",
-    "####################################",   # outer bottom wall
-]
+# MAZE = [
+#     "####################################",   # outer top wall
+#     "#   S     ######################   #",   # Room 1 (top-left) | Room 2 (top-right)
+#     "#         ######################   #",
+#     "#         ######################   #",
+#     "#         ######################   #",
+#     "### ############################# ##",   # wall: door at col 3 (Room 1) | door at col 14 (Room 2)
+#     "#                                  #",   # long horizontal corridor — drone starts at left end
+#     "##### ########################### ##",   # wall: door at col 5 (Room 3) | door at col 16 (Room 4)
+#     "#         ######################   #",   # Room 3 (bot-left) | Room 4 (bot-right)
+#     "#         ######################   #",
+#     "#         ######################   #",
+#     "#         ######################   #",
+#     "####################################",   # outer bottom wall
+# ]
 
 CELL   = 3.0   # metres per cell (corridor width)
 HEIGHT = 8.0   # wall height in metres
 
 # ---------------------------------------------------------------------------
+# Cylinders — add as many rows as you like: (x, y, radius, height)
+# x/y are world-frame metres; z is computed so the cylinder sits on the floor.
+# ---------------------------------------------------------------------------
+CYLINDERS = [
+    # ( x,    y,  radius, height)
+    (  0.0,  6.0,   0.3,   4.0),
+]
+
+# ---------------------------------------------------------------------------
+
+
+def _cylinder_model(cyl_id: int, x: float, y: float, radius: float, height: float) -> str:
+    return f"""
+    <model name="cylinder_{cyl_id}">
+      <static>true</static>
+      <pose>{x:.3f} {y:.3f} {height / 2:.3f} 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>{radius:.3f}</radius>
+              <length>{height:.3f}</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>{radius:.3f}</radius>
+              <length>{height:.3f}</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+            <diffuse>0.8 0.2 0.2 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>"""
 
 
 def _wall_model(wall_id: int, x: float, y: float) -> str:
@@ -103,7 +142,7 @@ def _wall_model(wall_id: int, x: float, y: float) -> str:
     </model>"""
 
 
-def generate_sdf(maze: list) -> tuple:
+def generate_sdf(maze: list, cylinders: list = None) -> tuple:
     rows = len(maze)
     cols = max(len(row) for row in maze)
 
@@ -125,6 +164,11 @@ def generate_sdf(maze: list) -> tuple:
             elif ch == '#':
                 wall_blocks.append(_wall_model(wall_id, wx, wy))
                 wall_id += 1
+
+    cylinder_blocks = [
+        _cylinder_model(i, x, y, r, h)
+        for i, (x, y, r, h) in enumerate(cylinders or [])
+    ]
 
     sdf = f"""<?xml version="1.0" ?>
 <sdf version="1.9">
@@ -181,6 +225,7 @@ def generate_sdf(maze: list) -> tuple:
       </link>
     </model>
 {"".join(wall_blocks)}
+{"".join(cylinder_blocks)}
 
   </world>
 </sdf>
@@ -193,7 +238,7 @@ if __name__ == "__main__":
         os.path.dirname(os.path.abspath(__file__)), "maze.world"
     )
 
-    sdf, (sx, sy) = generate_sdf(MAZE)
+    sdf, (sx, sy) = generate_sdf(MAZE, CYLINDERS)
 
     with open(out_path, "w") as f:
         f.write(sdf)

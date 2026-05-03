@@ -131,7 +131,7 @@ def generate_launch_description():
         description='Full path to world file to load'
     )
 
-    spawn_x = DeclareLaunchArgument('spawn_x', default_value='-48.0', description='Drone spawn X')
+    spawn_x = DeclareLaunchArgument('spawn_x', default_value='-9.0', description='Drone spawn X')
     spawn_y = DeclareLaunchArgument('spawn_y', default_value='15.0', description='Drone spawn Y')
     spawn_z = DeclareLaunchArgument('spawn_z', default_value='0.3', description='Drone spawn Z')
 
