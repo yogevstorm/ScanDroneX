@@ -1,24 +1,33 @@
 <launch>
+  <arg name="use_odom_switch" default="true"
+       description="true: SLAM uses odom_switch (with corridor fallback); false: SLAM uses odom_rf2o directly"/>
+
   <!-- slam -->
-  <include file="$(find-pkg-share slam)/launch/slam.launch.py"/>
+  <include file="$(find-pkg-share slam)/launch/slam.launch.py">
+    <arg name="use_odom_switch" value="$(var use_odom_switch)"/>
+  </include>
 
   <!-- laser odometry -->
-  <include file="$(find-pkg-share rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch.py"/>
+  <include file="$(find-pkg-share rf2o_laser_odometry)/launch/rf2o_laser_odometry.launch.py">
+    <arg name="use_odom_switch" value="$(var use_odom_switch)"/>
+  </include>
 
-  <!-- cmd_vel odometry -->
-  <node pkg="cmd_vel_odom" exec="cmd_vel_odom_node" name="cmd_vel_odom_node">
-    <param name="use_sim_time" value="true"/>
-  </node>
+  <!-- nodes only needed when odom_switch pipeline is active -->
+  <group if="$(var use_odom_switch)">
+    <!-- cmd_vel odometry -->
+    <node pkg="cmd_vel_odom" exec="cmd_vel_odom_node" name="cmd_vel_odom_node">
+      <param name="use_sim_time" value="true"/>
+    </node>
 
-  <!-- odom disagreement monitor -->
-  <node pkg="cmd_vel_odom" exec="odom_disagreement_node" name="odom_disagreement_node">
-    <param name="use_sim_time" value="true"/>
-  </node>
+    <!-- odom disagreement monitor -->
+    <node pkg="cmd_vel_odom" exec="odom_disagreement_node" name="odom_disagreement_node">
+      <param name="use_sim_time" value="true"/>
+    </node>
 
-  <!-- odom switch (rf2o <-> cmd_vel hysteresis) -->
-  <node pkg="cmd_vel_odom" exec="odom_switch_node" name="odom_switch_node">
-    <param name="use_sim_time" value="true"/>
-  </node>
+    <!-- odom switch (rf2o <-> cmd_vel hysteresis) -->
+    <node pkg="cmd_vel_odom" exec="odom_switch_node" name="odom_switch_node">
+      <param name="use_sim_time" value="true"/>
+    </node>
+  </group>
 
 </launch>
-

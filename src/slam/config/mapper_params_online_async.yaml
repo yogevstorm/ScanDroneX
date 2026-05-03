@@ -10,8 +10,9 @@ slam_toolbox:
     ceres_loss_function: None
 
     # ROS Parameters
-    # odom_frame: odom_cmd_vel
-    # odom_frame: odom_lidar
+    # odom_frame is overridden at launch time by use_odom_switch arg:
+    #   use_odom_switch=true  → odom_switch  (corridor fallback via cmd_vel)
+    #   use_odom_switch=false → odom_lidar   (RF2O direct, no fallback)
     odom_frame: odom_switch
     map_frame: map
     base_frame: simple_drone/base_footprint
