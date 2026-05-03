@@ -69,3 +69,55 @@ bool ScanLayer::FindRandomGoal(const nav_msgs::msg::OccupancyGrid & map,
 
   return true;
 }
+
+bool ScanLayer::FindCornerGoal(const nav_msgs::msg::OccupancyGrid & map,
+                                geometry_msgs::msg::PoseStamped & goal,
+                                int corner_index)
+{
+  const float ox  = map.info.origin.position.x;
+  const float oy  = map.info.origin.position.y;
+  const float map_w = map.info.width  * map.info.resolution;
+  const float map_h = map.info.height * map.info.resolution;
+
+  // 0=bottom-left  1=bottom-right  2=top-right  3=top-left
+  const float cx[4] = { ox,          ox + map_w,  ox + map_w,  ox         };
+  const float cy[4] = { oy,          oy,           oy + map_h,  oy + map_h };
+
+  const float target_x = cx[corner_index & 3];
+  const float target_y = cy[corner_index & 3];
+
+  int   best_idx     = -1;
+  float best_dist_sq = std::numeric_limits<float>::max();
+
+  for (size_t i = 0; i < map.data.size(); i++)
+  {
+    if (map.data[i] != -1) continue;
+
+    int col = i % map.info.width;
+    int row = i / map.info.width;
+    float wx = ox + (col + 0.5f) * map.info.resolution;
+    float wy = oy + (row + 0.5f) * map.info.resolution;
+
+    float dx = wx - target_x;
+    float dy = wy - target_y;
+    float dist_sq = dx * dx + dy * dy;
+    if (dist_sq < best_dist_sq)
+    {
+      best_dist_sq = dist_sq;
+      best_idx     = static_cast<int>(i);
+    }
+  }
+
+  if (best_idx < 0) return false;
+
+  int col = best_idx % map.info.width;
+  int row = best_idx / map.info.width;
+
+  goal.header.frame_id    = "map";
+  goal.pose.position.x    = ox + (col + 0.5f) * map.info.resolution;
+  goal.pose.position.y    = oy + (row + 0.5f) * map.info.resolution;
+  goal.pose.position.z    = 0.0;
+  goal.pose.orientation.w = 1.0;
+
+  return true;
+}

@@ -37,18 +37,6 @@ void ScanNode::Run()
     return;
   }
 
-  // Re-publish the same goal every 10 s while the path is blocked so
-  // MissionPathNode keeps retrying the replan.
-  if (m_is_path_blocked)
-  {
-    rclcpp::Time now = m_node->get_clock()->now();
-    if ((now - m_last_blocked_pub).seconds() >= 10.0)
-    {
-      m_current_goal.header.stamp = now;
-      m_pub_goal_pose->publish(m_current_goal);
-      m_last_blocked_pub = now;
-    }
-  }
 }
 
 void ScanNode::MapCallBack(const nav_msgs::msg::OccupancyGrid::SharedPtr msg)
@@ -72,20 +60,19 @@ void ScanNode::IsPathBlockedCallBack(const std_msgs::msg::Bool::SharedPtr msg)
   bool was_blocked  = m_is_path_blocked;
   m_is_path_blocked = msg->data;
 
-  if (m_is_path_blocked)
+  if (m_is_path_blocked && !was_blocked)
   {
+    // Newly blocked — re-publish the same goal once so the planner retries.
     PublishEstop(true);
-  }
-  else if (was_blocked)
-  {
-    // Transition: blocked → clear. Resume drone and re-publish goal once so
-    // MissionPathNode triggers a fresh replan on the now-open path.
-    PublishEstop(false);
     if (m_has_goal)
     {
       m_current_goal.header.stamp = m_node->get_clock()->now();
       m_pub_goal_pose->publish(m_current_goal);
     }
+  }
+  else if (!m_is_path_blocked && was_blocked)
+  {
+    PublishEstop(false);
   }
 }
 
@@ -124,9 +111,9 @@ void ScanNode::GoalUnreachableCallBack(const std_msgs::msg::Bool::SharedPtr msg)
   PublishEstop(false);
   m_unreachable_count++;
 
-  if (m_unreachable_count >= 10)
+  if (m_unreachable_count >= 4)
   {
-    RCLCPP_WARN(m_node->get_logger(), "10 consecutive unreachable goals — returning home.");
+    RCLCPP_WARN(m_node->get_logger(), "All 4 corners unreachable — returning home.");
     geometry_msgs::msg::PoseStamped home;
     home.header.stamp    = m_node->get_clock()->now();
     home.header.frame_id = "map";
@@ -162,16 +149,27 @@ void ScanNode::UpdateParams()
 void ScanNode::PublishNewGoal()
 {
   geometry_msgs::msg::PoseStamped goal;
-  if (!m_scan_layer.FindRandomGoal(m_map, goal, m_has_goal, m_current_goal, m_num_candidates))
+
+  // Try each of the 4 corners in order starting from m_corner_index.
+  // Skip corners that have no unknown cells (fully explored quadrant).
+  for (int attempt = 0; attempt < 4; attempt++)
   {
-    RCLCPP_WARN(m_node->get_logger(), "No unknown cells remaining in map — scan complete.");
-    return;
+    int corner = (m_corner_index + attempt) % 4;
+    if (m_scan_layer.FindCornerGoal(m_map, goal, corner))
+    {
+      m_corner_index = (corner + 1) % 4;
+      goal.header.stamp = m_node->get_clock()->now();
+      m_current_goal    = goal;
+      m_has_goal        = true;
+      m_pub_goal_pose->publish(m_current_goal);
+      RCLCPP_INFO(m_node->get_logger(),
+        "[ScanNode] New goal → corner %d  (%.2f, %.2f)",
+        corner, goal.pose.position.x, goal.pose.position.y);
+      return;
+    }
   }
 
-  goal.header.stamp = m_node->get_clock()->now();
-  m_current_goal = goal;
-  m_has_goal = true;
-  m_pub_goal_pose->publish(m_current_goal);
+  RCLCPP_WARN(m_node->get_logger(), "No unknown cells remaining in map — scan complete.");
 }
 
 int main(int argc, char * argv[])

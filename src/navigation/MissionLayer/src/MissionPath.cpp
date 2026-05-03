@@ -4,7 +4,7 @@ void MissionPath::Init_Publishers_Subscribers()
 {
   m_pub_path = m_node->create_publisher<visualization_msgs::msg::MarkerArray>("path_viz", 1);
   m_sub_map = m_node->create_subscription<nav_msgs::msg::OccupancyGrid>(
-      "map", 10, std::bind(&MissionPath::MapCallBack, this, _1));
+      "obstacle_map", 10, std::bind(&MissionPath::MapCallBack, this, _1));
 }
 
 void MissionPath::VisualizePath(navigation_msgs::msg::PathMsg path)
