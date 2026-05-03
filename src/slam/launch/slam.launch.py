@@ -59,10 +59,17 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
+    slam_scan_toggle = Node(
+        package='cmd_vel_odom',
+        executable='slam_scan_toggle_node',
+        name='slam_scan_toggle',
+        output='screen')
+
     ld.add_action(declare_use_sim_time_argument)
     ld.add_action(declare_params_file_cmd)
     ld.add_action(log_param_change)
     ld.add_action(start_async_slam_toolbox_node)
     ld.add_action(lifecycle_manager)
+    ld.add_action(slam_scan_toggle)
 
     return ld
