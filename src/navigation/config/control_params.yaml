@@ -16,7 +16,7 @@ ControlNode:
     DS: 0.2
     MAX_DIS_DRONE_FROM_TRAJ: 0.7
     PURE_PERSUIT_CTE: 1.5
-    K_GAIN: 2.0
+    K_GAIN: 1.0
     YAW_K_GAIN: 1.0
     MAX_ANGULAR: 2.0
     CROSS_TRACK_KP: 0.5
@@ -25,7 +25,7 @@ ControlNode:
     MAX_LATERAL: 0.3
     WALL_AVOID_K_GAIN: 3.0
     MAX_WALL_LATERAL: 0.4
-    V_MAX: 0.8
+    V_MAX: 1.0
     V_MIN: 0.2
     D_MAX: 1.0
     Delta_D: 0.1

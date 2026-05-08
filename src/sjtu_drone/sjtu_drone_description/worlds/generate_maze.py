@@ -40,38 +40,38 @@ import os
 #     "###########",   # outer bottom wall
 # ]
 
-MAZE = [
-    "###############",   # outer top wall
-    "#   S     #   #",   # Room 1 (top-left) | Room 2 (top-right)
-    "#         #   #",
-    "#         #   #",
-    "#         #   #",
-    "### ######## ##",   # wall: door at col 3 (Room 1) | door at col 14 (Room 2)
-    "#             #",   # long horizontal corridor — drone starts at left end
-    "##### ###### ##",   # wall: door at col 5 (Room 3) | door at col 16 (Room 4)
-    "#         #   #",   # Room 3 (bot-left) | Room 4 (bot-right)
-    "#         #   #",
-    "#         #   #",
-    "#         #   #",
-    "###############",   # outer bottom wall
-]
+# MAZE = [
+#     "###############",   # outer top wall
+#     "#   S     #   #",   # Room 1 (top-left) | Room 2 (top-right)
+#     "#         #   #",
+#     "#         #   #",
+#     "#         #   #",
+#     "### ######## ##",   # wall: door at col 3 (Room 1) | door at col 14 (Room 2)
+#     "#             #",   # long horizontal corridor — drone starts at left end
+#     "##### ###### ##",   # wall: door at col 5 (Room 3) | door at col 16 (Room 4)
+#     "#         #   #",   # Room 3 (bot-left) | Room 4 (bot-right)
+#     "#         #   #",
+#     "#         #   #",
+#     "#         #   #",
+#     "###############",   # outer bottom wall
+# ]
 
 ##########
-# MAZE = [
-#     "####################################",   # outer top wall
-#     "#   S     ######################   #",   # Room 1 (top-left) | Room 2 (top-right)
-#     "#         ######################   #",
-#     "#         ######################   #",
-#     "#         ######################   #",
-#     "### ############################# ##",   # wall: door at col 3 (Room 1) | door at col 14 (Room 2)
-#     "#                                  #",   # long horizontal corridor — drone starts at left end
-#     "##### ########################### ##",   # wall: door at col 5 (Room 3) | door at col 16 (Room 4)
-#     "#         ######################   #",   # Room 3 (bot-left) | Room 4 (bot-right)
-#     "#         ######################   #",
-#     "#         ######################   #",
-#     "#         ######################   #",
-#     "####################################",   # outer bottom wall
-# ]
+MAZE = [
+    "####################################",   # outer top wall
+    "#   S     ######################   #",   # Room 1 (top-left) | Room 2 (top-right)
+    "#         ######################   #",
+    "#         ######################   #",
+    "#         ######################   #",
+    "### ############################# ##",   # wall: door at col 3 (Room 1) | door at col 14 (Room 2)
+    "#                                  #",   # long horizontal corridor — drone starts at left end
+    "##### ########################### ##",   # wall: door at col 5 (Room 3) | door at col 16 (Room 4)
+    "#         ######################   #",   # Room 3 (bot-left) | Room 4 (bot-right)
+    "#         ######################   #",
+    "#         ######################   #",
+    "#         ######################   #",
+    "####################################",   # outer bottom wall
+]
 
 CELL   = 3.0   # metres per cell (corridor width)
 HEIGHT = 8.0   # wall height in metres

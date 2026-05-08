@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import importlib.util
 import os
 import xml.etree.ElementTree as ET
 
@@ -29,6 +30,32 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 import xacro
 import yaml
+
+
+_WORLDS_DIR = os.path.join(
+    get_package_share_directory('sjtu_drone_description'), 'worlds'
+)
+
+_spec = importlib.util.spec_from_file_location(
+    'generate_maze', os.path.join(_WORLDS_DIR, 'generate_maze.py')
+)
+_gm = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_gm)
+
+
+def _spawn_from_maze(maze, cell):
+    rows = len(maze)
+    cols = max(len(row) for row in maze)
+    offset_x = -(cols * cell) / 2.0 + cell / 2.0
+    offset_y =  (rows * cell) / 2.0 - cell / 2.0
+    for r, row in enumerate(maze):
+        for c, ch in enumerate(row):
+            if ch == 'S':
+                return offset_x + c * cell, offset_y - r * cell
+    return 0.0, 0.0
+
+
+_DEFAULT_SPAWN_X, _DEFAULT_SPAWN_Y = _spawn_from_maze(_gm.MAZE, _gm.CELL)
 
 
 def _world_name_from_sdf(world_path):
@@ -131,8 +158,8 @@ def generate_launch_description():
         description='Full path to world file to load'
     )
 
-    spawn_x = DeclareLaunchArgument('spawn_x', default_value='-9.0', description='Drone spawn X')
-    spawn_y = DeclareLaunchArgument('spawn_y', default_value='15.0', description='Drone spawn Y')
+    spawn_x = DeclareLaunchArgument('spawn_x', default_value=str(_DEFAULT_SPAWN_X), description='Drone spawn X')
+    spawn_y = DeclareLaunchArgument('spawn_y', default_value=str(_DEFAULT_SPAWN_Y), description='Drone spawn Y')
     spawn_z = DeclareLaunchArgument('spawn_z', default_value='0.3', description='Drone spawn Z')
 
     # --- Environment variables for gz-sim plugin / model discovery ---

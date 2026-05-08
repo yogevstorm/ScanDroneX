@@ -1,4 +1,5 @@
 #include <ScanNode.hpp>
+#include <algorithm>
 using namespace std::chrono_literals;
 
 void ScanNode::Init()
@@ -23,6 +24,9 @@ void ScanNode::Init()
 
   m_sub_is_out_of_lane = m_node->create_subscription<std_msgs::msg::Bool>(
       "is_out_of_lane", 1, std::bind(&ScanNode::IsOutOfLaneCallBack, this, std::placeholders::_1));
+
+  m_sub_drone_state = m_node->create_subscription<navigation_msgs::msg::DroneState>(
+      "drone_state", 1, std::bind(&ScanNode::DroneStateCallBack, this, std::placeholders::_1));
 }
 
 void ScanNode::Run()
@@ -113,20 +117,20 @@ void ScanNode::GoalUnreachableCallBack(const std_msgs::msg::Bool::SharedPtr msg)
 
   if (m_unreachable_count >= 4)
   {
-    RCLCPP_WARN(m_node->get_logger(), "All 4 corners unreachable — returning home.");
+    RCLCPP_WARN(m_node->get_logger(), "All sorted corners exhausted — returning home.");
     geometry_msgs::msg::PoseStamped home;
     home.header.stamp    = m_node->get_clock()->now();
     home.header.frame_id = "map";
     home.pose.position.x = 0.0;
     home.pose.position.y = 0.0;
-    home.pose.orientation.w = 1.0;  // yaw = 0
+    home.pose.orientation.w = 1.0;
     m_pub_goal_pose->publish(home);
     m_returning_home = true;
     m_has_goal       = false;
     return;
   }
 
-  PublishNewGoal();
+  PublishNewGoal(false);
 }
 
 void ScanNode::PublishEstop(bool estop)
@@ -146,18 +150,46 @@ void ScanNode::UpdateParams()
   m_node->get_parameter("SCAN_NUM_CANDIDATES", m_num_candidates);
 }
 
-void ScanNode::PublishNewGoal()
+void ScanNode::DroneStateCallBack(const navigation_msgs::msg::DroneState::SharedPtr msg)
 {
+  m_drone_x         = msg->x;
+  m_drone_y         = msg->y;
+  m_has_drone_state = true;
+}
+
+void ScanNode::PublishNewGoal(bool new_session)
+{
+  if (new_session)
+  {
+    m_unreachable_count = 0;
+
+    for (int i = 0; i < 4; i++) m_sorted_corners[i] = i;
+
+    if (m_has_drone_state)
+    {
+      const float ox    = m_map.info.origin.position.x;
+      const float oy    = m_map.info.origin.position.y;
+      const float map_w = m_map.info.width  * m_map.info.resolution;
+      const float map_h = m_map.info.height * m_map.info.resolution;
+
+      const float cx[4] = { ox,          ox + map_w,  ox + map_w,  ox         };
+      const float cy[4] = { oy,          oy,           oy + map_h,  oy + map_h };
+
+      std::sort(m_sorted_corners, m_sorted_corners + 4, [&](int a, int b) {
+        float dxa = cx[a] - m_drone_x, dya = cy[a] - m_drone_y;
+        float dxb = cx[b] - m_drone_x, dyb = cy[b] - m_drone_y;
+        return (dxa*dxa + dya*dya) < (dxb*dxb + dyb*dyb);
+      });
+    }
+  }
+
   geometry_msgs::msg::PoseStamped goal;
 
-  // Try each of the 4 corners in order starting from m_corner_index.
-  // Skip corners that have no unknown cells (fully explored quadrant).
-  for (int attempt = 0; attempt < 4; attempt++)
+  for (int i = m_unreachable_count; i < 4; i++)
   {
-    int corner = (m_corner_index + attempt) % 4;
+    int corner = m_sorted_corners[i];
     if (m_scan_layer.FindCornerGoal(m_map, goal, corner))
     {
-      m_corner_index = (corner + 1) % 4;
       goal.header.stamp = m_node->get_clock()->now();
       m_current_goal    = goal;
       m_has_goal        = true;

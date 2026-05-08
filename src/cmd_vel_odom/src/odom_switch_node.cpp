@@ -5,8 +5,8 @@ OdomSwitchNode::OdomSwitchNode()
 : Node("odom_switch_node")
 {
   threshold_high_   = this->declare_parameter<double>("threshold_high",   0.4);
-  threshold_low_    = this->declare_parameter<double>("threshold_low",    0.1);
-  switch_delay_sec_ = this->declare_parameter<double>("switch_delay_sec", 2.0);
+  threshold_low_    = this->declare_parameter<double>("threshold_low",    0.15);
+  switch_delay_sec_ = this->declare_parameter<double>("switch_delay_sec", 1.0);
 
   rf2o_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
     "/odom_rf2o", 10,
@@ -37,6 +37,8 @@ void OdomSwitchNode::switchTo(Source next, const nav_msgs::msg::Odometry::Shared
 void OdomSwitchNode::disagreementCallback(const std_msgs::msg::Float32::SharedPtr msg)
 {
   const float val = msg->data;
+  if (val == 0.0f) return;
+
   const rclcpp::Time now = this->now();
 
   // High condition: disagreement sustained above threshold → switch to CMD_VEL
