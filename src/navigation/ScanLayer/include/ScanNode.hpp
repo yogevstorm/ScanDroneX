@@ -29,13 +29,12 @@ private:
   nav_msgs::msg::OccupancyGrid m_map;
   geometry_msgs::msg::PoseStamped m_current_goal;
 
-  bool m_is_map_received = false;
-  bool m_has_goal        = false;
-  bool m_is_path_blocked = false;
-  bool m_returning_home  = false;
+  bool m_is_map_received   = false;
+  bool m_has_goal          = false;
+  bool m_is_path_blocked   = false;
+  bool m_returning_home    = false;
   int  m_unreachable_count = 0;
-
-  rclcpp::Time m_last_blocked_pub{0, 0, RCL_ROS_TIME};
+  int  m_corner_index      = 0;   // cycles 0-3 through map corners
 
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_pub_goal_pose;
   rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_estop;
