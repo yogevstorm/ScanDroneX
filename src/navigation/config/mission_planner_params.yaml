@@ -6,6 +6,7 @@ Manager:
     COLLISION_PNTS: [0.0]
     END_TOLERANCE: 1.0
     ASTAR_TIMEOUT_SEC: 500.0
+    ASTAR_STEP_SIZE: 5
 
   
 

@@ -26,7 +26,7 @@ private:
 
   double min_cmd_vx_{0.2};
 
-  static constexpr size_t WINDOW = 20;
+  static constexpr size_t WINDOW = 10;
   std::deque<float> linear_window_;
   std::deque<float> angular_window_;
 

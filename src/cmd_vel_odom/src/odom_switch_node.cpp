@@ -4,9 +4,9 @@
 OdomSwitchNode::OdomSwitchNode()
 : Node("odom_switch_node")
 {
-  threshold_high_   = this->declare_parameter<double>("threshold_high",   0.4);
+  threshold_high_   = this->declare_parameter<double>("threshold_high",   0.5);
   threshold_low_    = this->declare_parameter<double>("threshold_low",    0.2);
-  switch_delay_sec_ = this->declare_parameter<double>("switch_delay_sec", 1.5);
+  switch_delay_sec_ = this->declare_parameter<double>("switch_delay_sec", 2.0);
 
   rf2o_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
     "/odom_rf2o", 10,

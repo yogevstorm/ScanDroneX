@@ -48,6 +48,7 @@ void MissionPathNode::InitParams()
   m_node->declare_parameter<std::vector<double>>("COLLISION_PNTS", {0.0, 0.2});
   m_node->declare_parameter<float>("END_TOLERANCE", 0.2);
   m_node->declare_parameter<double>("ASTAR_TIMEOUT_SEC", 500.0);
+  m_node->declare_parameter<int>("ASTAR_STEP_SIZE", 5);
 }
 
 void MissionPathNode::UpdateParams()
@@ -58,6 +59,7 @@ void MissionPathNode::UpdateParams()
   m_node->get_parameter("END_TOLERANCE", m_end_tolerance);
   m_mission_path.m_astar.m_collision_r = m_collision_r;
   m_node->get_parameter("ASTAR_TIMEOUT_SEC", m_mission_path.m_astar.m_search_timeout_sec);
+  m_node->get_parameter("ASTAR_STEP_SIZE", m_mission_path.m_astar.m_step_size);
 }
 
 void MissionPathNode::InitMission()
