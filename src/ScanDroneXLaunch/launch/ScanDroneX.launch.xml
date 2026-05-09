@@ -19,8 +19,8 @@
       <param name="use_sim_time" value="true"/>
     </node>
 
-    <!-- odom disagreement monitor -->
-    <node pkg="cmd_vel_odom" exec="odom_disagreement_node" name="odom_disagreement_node">
+    <!-- corners detector (drives odom switch) -->
+    <node pkg="corners_detector" exec="corners_detector_node" name="corners_detector_node">
       <param name="use_sim_time" value="true"/>
     </node>
 

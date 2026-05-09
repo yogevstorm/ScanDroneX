@@ -36,22 +36,6 @@ ament_target_dependencies(cmd_vel_odom_node
   tf2_ros
 )
 
-add_executable(odom_disagreement_node
-  src/odom_disagreement_main.cpp
-  src/odom_disagreement_node.cpp
-)
-
-target_include_directories(odom_disagreement_node PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-
-ament_target_dependencies(odom_disagreement_node
-  rclcpp
-  geometry_msgs
-  nav_msgs
-  std_msgs
-)
 
 add_executable(odom_switch_node
   src/odom_switch_main.cpp
@@ -87,7 +71,7 @@ ament_target_dependencies(slam_scan_toggle_node
   rcl_interfaces
 )
 
-install(TARGETS cmd_vel_odom_node odom_disagreement_node odom_switch_node slam_scan_toggle_node
+install(TARGETS cmd_vel_odom_node odom_switch_node slam_scan_toggle_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
