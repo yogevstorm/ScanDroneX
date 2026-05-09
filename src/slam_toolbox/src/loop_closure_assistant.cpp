@@ -19,7 +19,6 @@
 #include <unordered_map>
 #include <memory>
 
-#include "std_msgs/msg/int32.hpp"
 #include "slam_toolbox/loop_closure_assistant.hpp"
 
 namespace loop_closure_assistant
@@ -76,10 +75,6 @@ LoopClosureAssistant::LoopClosureAssistant(
 
   marker_publisher_ = node->template create_publisher<visualization_msgs::msg::MarkerArray>(
     "slam_toolbox/graph_visualization", rclcpp::QoS(1));
-  graph_stats_publisher_ = node->template create_publisher<std_msgs::msg::Int32>(
-    "slam_toolbox/graph_stats", rclcpp::QoS(10));
-  loop_closure_counter_ = std::make_unique<LoopClosureCounter>();
-  mapper_->AddListener(loop_closure_counter_.get());
   map_frame_ = node->get_parameter("map_frame").as_string();
 }
 
@@ -88,7 +83,6 @@ void LoopClosureAssistant::setMapper(karto::Mapper * mapper)
 /*****************************************************************************/
 {
   mapper_ = mapper;
-  mapper_->AddListener(loop_closure_counter_.get());
 }
 
 /*****************************************************************************/
@@ -276,10 +270,6 @@ void LoopClosureAssistant::publishGraph()
   // if disabled, clears out old markers
   interactive_server_->applyChanges();
   marker_publisher_->publish(marray);
-
-  std_msgs::msg::Int32 stats_msg;
-  stats_msg.data = loop_closure_counter_->getCount();
-  graph_stats_publisher_->publish(stats_msg);
 }
 
 /*****************************************************************************/

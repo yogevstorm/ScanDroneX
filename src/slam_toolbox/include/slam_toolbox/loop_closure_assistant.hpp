@@ -19,7 +19,6 @@
 #ifndef SLAM_TOOLBOX__LOOP_CLOSURE_ASSISTANT_HPP_
 #define SLAM_TOOLBOX__LOOP_CLOSURE_ASSISTANT_HPP_
 
-#include <atomic>
 #include <thread>
 #include <string>
 #include <functional>
@@ -34,7 +33,6 @@
 #include "interactive_markers/interactive_marker_server.hpp"
 #include "interactive_markers/menu_handler.hpp"
 
-#include "std_msgs/msg/int32.hpp"
 #include "slam_toolbox/toolbox_types.hpp"
 #include "slam_toolbox/laser_utils.hpp"
 #include "slam_toolbox/visualization_utils.hpp"
@@ -43,17 +41,6 @@ namespace loop_closure_assistant
 {
 
 using namespace ::toolbox_types;  // NOLINT
-
-class LoopClosureCounter : public karto::MapperLoopClosureListener
-{
-public:
-  LoopClosureCounter() : count_(0) {}
-  void EndLoopClosure(const std::string &) override { count_++; }
-  int getCount() const { return count_.load(); }
-
-private:
-  std::atomic<int> count_;
-};
 
 class LoopClosureAssistant
 {
@@ -91,8 +78,6 @@ private:
   laser_utils::ScanHolder * scan_holder_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_publisher_;
   rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr scan_publisher_;
-  rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr graph_stats_publisher_;
-  std::unique_ptr<LoopClosureCounter> loop_closure_counter_;
   rclcpp::Service<slam_toolbox::srv::Clear>::SharedPtr ssClear_manual_;
   rclcpp::Service<slam_toolbox::srv::LoopClosure>::SharedPtr ssLoopClosure_;
   rclcpp::Service<slam_toolbox::srv::ToggleInteractive>::SharedPtr ssInteractive_;
