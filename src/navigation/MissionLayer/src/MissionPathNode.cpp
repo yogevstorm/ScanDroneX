@@ -47,7 +47,7 @@ void MissionPathNode::InitParams()
   m_node->declare_parameter<float>("ESP_COLLISION_R", 0.15);
   m_node->declare_parameter<std::vector<double>>("COLLISION_PNTS", {0.0, 0.2});
   m_node->declare_parameter<float>("END_TOLERANCE", 0.2);
-  m_node->declare_parameter<double>("ASTAR_TIMEOUT_SEC", 10.0);
+  m_node->declare_parameter<double>("ASTAR_TIMEOUT_SEC", 500.0);
 }
 
 void MissionPathNode::UpdateParams()

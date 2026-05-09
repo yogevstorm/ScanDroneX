@@ -102,22 +102,28 @@ void ScanNode::IsOutOfLaneCallBack(const std_msgs::msg::Bool::SharedPtr msg)
 void ScanNode::GoalUnreachableCallBack(const std_msgs::msg::Bool::SharedPtr msg)
 {
   if (m_returning_home) return;
-
-  if (!msg->data)
-  {
-    m_unreachable_count = 0;
-    return;
-  }
-
+  if (!msg->data) { m_corner_attempt = 0; return; }
   if (!m_has_goal) return;
 
   m_is_path_blocked = false;
   PublishEstop(false);
-  m_unreachable_count++;
 
-  if (m_unreachable_count >= 4)
+  m_corner_attempt++;
+
+  if (m_corner_attempt < 4)
   {
-    RCLCPP_WARN(m_node->get_logger(), "All sorted corners exhausted — returning home.");
+    // Same corner, next spiral point outward.
+    PublishNewGoal(false);
+    return;
+  }
+
+  // Current corner exhausted — move to the next one.
+  m_corner_attempt = 0;
+  m_corner_index++;
+
+  if (m_corner_index >= 4)
+  {
+    RCLCPP_WARN(m_node->get_logger(), "All corners exhausted — returning home.");
     geometry_msgs::msg::PoseStamped home;
     home.header.stamp    = m_node->get_clock()->now();
     home.header.frame_id = "map";
@@ -161,7 +167,8 @@ void ScanNode::PublishNewGoal(bool new_session)
 {
   if (new_session)
   {
-    m_unreachable_count = 0;
+    m_corner_index   = 0;
+    m_corner_attempt = 0;
 
     for (int i = 0; i < 4; i++) m_sorted_corners[i] = i;
 
@@ -184,21 +191,18 @@ void ScanNode::PublishNewGoal(bool new_session)
   }
 
   geometry_msgs::msg::PoseStamped goal;
+  int corner = m_sorted_corners[m_corner_index];
 
-  for (int i = m_unreachable_count; i < 4; i++)
+  if (m_scan_layer.FindCornerGoal(m_map, goal, corner, m_corner_attempt))
   {
-    int corner = m_sorted_corners[i];
-    if (m_scan_layer.FindCornerGoal(m_map, goal, corner))
-    {
-      goal.header.stamp = m_node->get_clock()->now();
-      m_current_goal    = goal;
-      m_has_goal        = true;
-      m_pub_goal_pose->publish(m_current_goal);
-      RCLCPP_INFO(m_node->get_logger(),
-        "[ScanNode] New goal → corner %d  (%.2f, %.2f)",
-        corner, goal.pose.position.x, goal.pose.position.y);
-      return;
-    }
+    goal.header.stamp = m_node->get_clock()->now();
+    m_current_goal    = goal;
+    m_has_goal        = true;
+    m_pub_goal_pose->publish(m_current_goal);
+    RCLCPP_INFO(m_node->get_logger(),
+      "[ScanNode] New goal → corner %d attempt %d  (%.2f, %.2f)",
+      corner, m_corner_attempt, goal.pose.position.x, goal.pose.position.y);
+    return;
   }
 
   RCLCPP_WARN(m_node->get_logger(), "No unknown cells remaining in map — scan complete.");

@@ -38,7 +38,8 @@ private:
   bool  m_has_drone_state   = false;
   float m_drone_x           = 0.0f;
   float m_drone_y           = 0.0f;
-  int   m_unreachable_count = 0;
+  int   m_corner_index   = 0;  // which corner we're targeting (index into m_sorted_corners)
+  int   m_corner_attempt = 0;  // spiral step within the current corner (0 = closest)
   int   m_sorted_corners[4] = {0, 1, 2, 3};
 
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_pub_goal_pose;
