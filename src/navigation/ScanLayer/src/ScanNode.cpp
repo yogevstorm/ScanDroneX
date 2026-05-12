@@ -110,7 +110,7 @@ void ScanNode::GoalUnreachableCallBack(const std_msgs::msg::Bool::SharedPtr msg)
 
   m_corner_attempt++;
 
-  if (m_corner_attempt < 4)
+  if (m_corner_attempt < 2)
   {
     // Same corner, next spiral point outward.
     PublishNewGoal(false);
