@@ -26,15 +26,17 @@ private:
   void DroneStateCallBack(const navigation_msgs::msg::DroneState::SharedPtr msg);
   void PublishNewGoal(bool new_session = true);
   void PublishEstop(bool estop);
+  void RunCornerSpiral();
 
   ScanLayer m_scan_layer;
   nav_msgs::msg::OccupancyGrid m_map;
   geometry_msgs::msg::PoseStamped m_current_goal;
 
-  bool  m_is_map_received   = false;
-  bool  m_has_goal          = false;
-  bool  m_is_path_blocked   = false;
-  bool  m_returning_home    = false;
+  bool  m_is_map_received      = false;
+  bool  m_has_goal             = false;
+  bool  m_is_path_blocked      = false;
+  bool  m_is_goal_unreachable  = false;
+  bool  m_returning_home       = false;
   bool  m_has_drone_state   = false;
   float m_drone_x           = 0.0f;
   float m_drone_y           = 0.0f;

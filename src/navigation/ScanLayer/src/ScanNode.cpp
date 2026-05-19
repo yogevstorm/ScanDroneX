@@ -66,17 +66,13 @@ void ScanNode::IsPathBlockedCallBack(const std_msgs::msg::Bool::SharedPtr msg)
 
   if (m_is_path_blocked && !was_blocked)
   {
-    // Newly blocked — re-publish the same goal once so the planner retries.
     PublishEstop(true);
-    if (m_has_goal)
-    {
-      m_current_goal.header.stamp = m_node->get_clock()->now();
-      m_pub_goal_pose->publish(m_current_goal);
-    }
+    RunCornerSpiral();
   }
   else if (!m_is_path_blocked && was_blocked)
   {
-    PublishEstop(false);
+    if (!m_is_goal_unreachable)
+      PublishEstop(false);
   }
 }
 
@@ -101,23 +97,33 @@ void ScanNode::IsOutOfLaneCallBack(const std_msgs::msg::Bool::SharedPtr msg)
 
 void ScanNode::GoalUnreachableCallBack(const std_msgs::msg::Bool::SharedPtr msg)
 {
+  m_is_goal_unreachable = msg->data;
+
   if (m_returning_home) return;
-  if (!msg->data) { m_corner_attempt = 0; return; }
+  if (!msg->data)
+  {
+    m_corner_attempt = 0;
+    if (!m_is_path_blocked)
+      PublishEstop(false);
+    return;
+  }
   if (!m_has_goal) return;
 
-  m_is_path_blocked = false;
-  PublishEstop(false);
+  RunCornerSpiral();
+}
+
+void ScanNode::RunCornerSpiral()
+{
+  if (!m_has_goal || m_returning_home) return;
 
   m_corner_attempt++;
 
   if (m_corner_attempt < 2)
   {
-    // Same corner, next spiral point outward.
     PublishNewGoal(false);
     return;
   }
 
-  // Current corner exhausted — move to the next one.
   m_corner_attempt = 0;
   m_corner_index++;
 
