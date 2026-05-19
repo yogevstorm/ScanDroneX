@@ -1,7 +1,7 @@
 #include <HybridAstar.hpp>
 
 
-void HybridAstar::BackTrackNodes(Node p_end_node, std::map<int, Node> p_closed_list)
+void HybridAstar::BackTrackNodes(Node p_end_node, const std::unordered_map<int, Node>& p_closed_list)
 {
   Node curr_node = p_end_node;
   m_path.path_msg.clear();
@@ -10,7 +10,7 @@ void HybridAstar::BackTrackNodes(Node p_end_node, std::map<int, Node> p_closed_l
     navigation_msgs::msg::WorldPoint path_point;
     path_point = curr_node.wpoint;
     m_path.path_msg.push_back(path_point);
-    curr_node = p_closed_list[curr_node.parent_ind];
+    curr_node = p_closed_list.at(curr_node.parent_ind);
   }  
   m_start_node.wpoint.gear = m_path.path_msg.back().gear;
   m_path.path_msg.push_back(m_start_node.wpoint);
@@ -149,46 +149,20 @@ void HybridAstar::DeleteInvalidNeighbors(std::vector<Node>& p_neighbors)
 
 
 
-void HybridAstar::AppendNeighborsToOpenList(std::map<int, Node>& p_open_list, std::map<int, Node> p_closed_list,
-                      std::vector<Node> p_neighbors)
+void HybridAstar::AppendNeighborsToOpenList(std::unordered_map<int, Node>& p_open_list, OpenPQ& p_open_pq,
+                      const std::unordered_map<int, Node>& p_closed_list, const std::vector<Node>& p_neighbors)
 {
-  for(auto neighbor :p_neighbors)
+  for (const auto& neighbor : p_neighbors)
   {
-    //neighbor is on the closed list
-    bool is_neighbor_in_close_list = false;
-
-    bool is_neighbor_in_open_list = false;
-    
-    for (auto element :p_closed_list)
-    {
-      if(neighbor.ind == element.first){
-        is_neighbor_in_close_list = true;
-        break;
-      }
-    }
-
-    if(is_neighbor_in_close_list){
-      is_neighbor_in_close_list = false;
+    if (p_closed_list.count(neighbor.ind))
       continue;
-    }
 
-    //Child is already in the open list
-    
-    for (auto element :p_open_list){
-
-      if(neighbor.ind == element.first && neighbor.f > element.second.f){
-        is_neighbor_in_open_list = true;
-        break;
-      }
-    }
-
-    if(is_neighbor_in_open_list){
-      is_neighbor_in_open_list = false;
+    auto it = p_open_list.find(neighbor.ind);
+    if (it != p_open_list.end() && neighbor.f >= it->second.f)
       continue;
-    }
 
-    //Add the child to the open list
     p_open_list[neighbor.ind] = neighbor;
+    p_open_pq.push({neighbor.f, neighbor.ind});
   }
 }
 
@@ -216,7 +190,7 @@ void HybridAstar::Init(navigation_msgs::msg::DistMapMsg p_dist_map, navigation_m
 
 
 
-navigation_msgs::msg::PathMsg HybridAstar::PreemptedPath(Node &p_node, std::map<int, Node> p_closed_list)
+navigation_msgs::msg::PathMsg HybridAstar::PreemptedPath(Node& p_node, const std::unordered_map<int, Node>& p_closed_list)
 {
   BackTrackNodes(p_node, p_closed_list);
   return m_path;
@@ -234,45 +208,42 @@ navigation_msgs::msg::PathMsg HybridAstar::Search(navigation_msgs::msg::DistMapM
   best_node = m_start_node;
   //Initialize both open and closed list
   int64 start_t = cv::getTickCount();
-  std::map<int, Node> open_list; std::map<int, Node> closed_list;
+  std::unordered_map<int, Node> open_list, closed_list;
+  OpenPQ open_pq;
   open_list[m_start_node.ind] = m_start_node;
+  open_pq.push({m_start_node.f, m_start_node.ind});
   std::vector<Node> neighbors;
   float dt = 0.0;
-  //Loop until you find the end
 
   while (!open_list.empty() && dt < timeout){
-    
+
     neighbors.clear();
 
-    current_node = open_list.begin()->second;
-
-    for(auto element :open_list){
-      if(element.second.f < current_node.f){
-        current_node = element.second;
-      }
+    // skip stale pq entries (node was updated or already closed)
+    while (!open_pq.empty()) {
+      auto [f, ind] = open_pq.top();
+      auto it = open_list.find(ind);
+      if (it != open_list.end() && it->second.f == f) break;
+      open_pq.pop();
     }
+    if (open_pq.empty()) break;
 
-    if (m_do_preempt && current_node.wpoint.s >= best_node.wpoint.s)
-    {
-      best_node = current_node;
-    }
-
-    open_list.erase(current_node.ind);
-
+    auto [f, ind] = open_pq.top(); open_pq.pop();
+    current_node = open_list[ind];
+    open_list.erase(ind);
     closed_list[current_node.ind] = current_node;
 
+    if (m_do_preempt && current_node.wpoint.s >= best_node.wpoint.s)
+      best_node = current_node;
+
     if(IsDestination(current_node)){
-      //  Found the goal
       BackTrackNodes(current_node, closed_list);
+      return m_path;
+    }
 
-      return m_path;}
-      
-    // Loop through neighbors
-    NeighborsNode(neighbors, p_dist_map.info, current_node ,7, m_max_steer_angle * (M_PI/180.0), m_ds);
-    
+    NeighborsNode(neighbors, p_dist_map.info, current_node, 7, m_max_steer_angle * (M_PI/180.0), m_ds);
     DeleteInvalidNeighbors(neighbors);
-
-    AppendNeighborsToOpenList(open_list, closed_list, neighbors);  
+    AppendNeighborsToOpenList(open_list, open_pq, closed_list, neighbors);
 
     dt = (cv::getTickCount() - start_t)/cv::getTickFrequency();
   }

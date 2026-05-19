@@ -7,11 +7,15 @@
 #include <visualization_msgs/msg/marker.hpp>
 #include <memory>
 #include <map>
+#include <unordered_map>
+#include <queue>
 #include <vector>
 #include <cmath>
 #include "DistMap.hpp"
 #include <Node.hpp>
 #include <ControlUtils.hpp>
+
+using OpenPQ = std::priority_queue<std::pair<float,int>, std::vector<std::pair<float,int>>, std::greater<std::pair<float,int>>>;
 
 
 class HybridAstar
@@ -62,13 +66,14 @@ class HybridAstar
     Node KinematicStep(Node p_parent_node, double p_steer, float p_ds,  bool p_is_reverse);
     float GetHeuristic(Node p_node);
     bool IsDestination(Node p_node);
-    void BackTrackNodes(Node p_end_node, std::map<int, Node> p_closed_list);
+    void BackTrackNodes(Node p_end_node, const std::unordered_map<int, Node>& p_closed_list);
     void DeleteInvalidNeighbors(std::vector<Node>& p_neighbors);
-    void AppendNeighborsToOpenList(std::map<int, Node>& p_open_list, std::map<int, Node> p_closed_list, std::vector<Node> p_neighbors);
+    void AppendNeighborsToOpenList(std::unordered_map<int, Node>& p_open_list, OpenPQ& p_open_pq,
+        const std::unordered_map<int, Node>& p_closed_list, const std::vector<Node>& p_neighbors);
     int FlatIndex(nav_msgs::msg::MapMetaData p_map_info, navigation_msgs::msg::WorldPoint p_wpoint);
     void Init(navigation_msgs::msg::DistMapMsg p_dist_map, navigation_msgs::msg::WorldPoint p_start,
       navigation_msgs::msg::Lane p_lane);
-    navigation_msgs::msg::PathMsg PreemptedPath(Node &p_node, std::map<int, Node> p_closed_list);
+    navigation_msgs::msg::PathMsg PreemptedPath(Node& p_node, const std::unordered_map<int, Node>& p_closed_list);
 
     ControlUtils m_control_utils;
     navigation_msgs::msg::DistMapMsg m_dist_map;
