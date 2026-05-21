@@ -1,5 +1,5 @@
 <launch>
-  <arg name="use_odom_switch" default="false"
+  <arg name="use_odom_switch" default="true"
        description="true: SLAM uses odom_switch (with corridor fallback); false: SLAM uses odom_rf2o directly"/>
 
   <!-- slam -->

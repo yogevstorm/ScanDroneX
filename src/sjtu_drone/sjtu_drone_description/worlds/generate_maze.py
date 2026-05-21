@@ -46,9 +46,9 @@ MAZE = [
     "#         #   #",
     "#         #   #",
     "#         #   #",
-    "### ######## ##",   # wall: door at col 3 (Room 1) | door at col 14 (Room 2)
-    "#             #",   # long horizontal corridor — drone starts at left end
-    "##### ###### ##",   # wall: door at col 5 (Room 3) | door at col 16 (Room 4)
+    "#################",   # wall: door at col 3 (Room 1) | door at col 14 (Room 2)
+    "#               #",   # long horizontal corridor — drone starts at left end
+    "#################",   # wall: door at col 5 (Room 3) | door at col 16 (Room 4)
     "#         #   #",   # Room 3 (bot-left) | Room 4 (bot-right)
     "#         #   #",
     "#         #   #",
