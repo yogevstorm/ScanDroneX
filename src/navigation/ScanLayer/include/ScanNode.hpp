@@ -26,6 +26,7 @@ private:
   void DroneStateCallBack(const navigation_msgs::msg::DroneState::SharedPtr msg);
   void OpeningsCallBack(const geometry_msgs::msg::PoseArray::SharedPtr msg);
   void PublishNewGoal();
+  void ReturnHome();
   void PublishEstop(bool estop);
 
   nav_msgs::msg::OccupancyGrid       m_map;
@@ -33,6 +34,9 @@ private:
 
   std::vector<geometry_msgs::msg::Pose> m_openings;
   size_t m_opening_index = 0;
+
+  rclcpp::Time m_no_openings_since;
+  bool         m_no_openings_timer_set = false;
 
   bool  m_is_map_received     = false;
   bool  m_has_goal            = false;

@@ -39,6 +39,15 @@ void ScanNode::Run()
 
   if (!m_has_goal)
   {
+    if (m_openings.empty()) {
+      if (m_no_openings_timer_set) {
+        auto elapsed = (m_node->get_clock()->now() - m_no_openings_since).seconds();
+        if (elapsed >= 5.0) {
+          ReturnHome();
+        }
+      }
+      return;
+    }
     PublishNewGoal();
   }
 }
@@ -53,6 +62,15 @@ void ScanNode::OpeningsCallBack(const geometry_msgs::msg::PoseArray::SharedPtr m
 {
   m_openings      = msg->poses;
   m_opening_index = 0;
+
+  if (m_openings.empty()) {
+    if (!m_no_openings_timer_set) {
+      m_no_openings_since     = m_node->get_clock()->now();
+      m_no_openings_timer_set = true;
+    }
+  } else {
+    m_no_openings_timer_set = false;
+  }
 }
 
 void ScanNode::IsDestinationCallBack(const std_msgs::msg::Bool::SharedPtr msg)
@@ -130,6 +148,20 @@ void ScanNode::UpdateParams() {}
 
 void ScanNode::DroneStateCallBack(const navigation_msgs::msg::DroneState::SharedPtr /*msg*/) {}
 
+void ScanNode::ReturnHome()
+{
+  RCLCPP_WARN(m_node->get_logger(), "[ScanNode] Returning home (0, 0).");
+  geometry_msgs::msg::PoseStamped home;
+  home.header.stamp    = m_node->get_clock()->now();
+  home.header.frame_id = "map";
+  home.pose.position.x = 0.0;
+  home.pose.position.y = 0.0;
+  home.pose.orientation.w = 1.0;
+  m_pub_goal_pose->publish(home);
+  m_returning_home = true;
+  m_has_goal       = false;
+}
+
 void ScanNode::PublishNewGoal()
 {
   if (m_returning_home) return;
@@ -149,16 +181,8 @@ void ScanNode::PublishNewGoal()
     return;
   }
 
-  RCLCPP_WARN(m_node->get_logger(), "[ScanNode] No more openings — returning home (0, 0).");
-  geometry_msgs::msg::PoseStamped home;
-  home.header.stamp    = m_node->get_clock()->now();
-  home.header.frame_id = "map";
-  home.pose.position.x = 0.0;
-  home.pose.position.y = 0.0;
-  home.pose.orientation.w = 1.0;
-  m_pub_goal_pose->publish(home);
-  m_returning_home = true;
-  m_has_goal       = false;
+  RCLCPP_WARN(m_node->get_logger(), "[ScanNode] All openings exhausted.");
+  ReturnHome();
 }
 
 int main(int argc, char * argv[])
