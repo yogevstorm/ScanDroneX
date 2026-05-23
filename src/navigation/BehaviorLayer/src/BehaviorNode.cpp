@@ -103,12 +103,9 @@ void BehaviorNode::RunBehaviorPlanner()
   std_msgs::msg::Bool lane_end_msg;
   if (m_behavior_planner.m_lane.clusters.size() < 2.0f / m_behavior_planner.m_ds_param)
   {
-    if (!m_lane_end_triggered)
-    {
-      lane_end_msg.data = true;
-      m_pub_lane_end->publish(lane_end_msg);
-      m_lane_end_triggered = true;
-    }
+    lane_end_msg.data = true;
+    m_pub_lane_end->publish(lane_end_msg);
+    m_lane_end_triggered = true;
   }
   else if (m_lane_end_triggered)
   {
