@@ -65,4 +65,12 @@ def generate_launch_description():
             parameters=['/home/yogev/Desktop/ScanDroneX/src/navigation/config/scan_params.yaml'],
             output="screen"
         ),
+
+        Node(
+            package='openings_detector',
+            executable='openings_detector_node',
+            name='openings_detector_node',
+            parameters=[{'min_opening_width': 5}],
+            output="screen"
+        ),
     ])

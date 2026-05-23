@@ -131,7 +131,6 @@ target_link_libraries(ControlNode ${utils_lib} ${control_layer_lib})
 
 add_executable(ScanNode ScanLayer/src/ScanNode.cpp)
 ament_target_dependencies(ScanNode ${dependencies})
-target_link_libraries(ScanNode ${scan_layer_lib})
 
 
 
