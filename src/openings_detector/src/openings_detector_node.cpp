@@ -7,7 +7,7 @@
 OpeningsDetectorNode::OpeningsDetectorNode()
 : Node("openings_detector_node")
 {
-  declare_parameter("min_opening_width", 5);
+  declare_parameter("min_opening_width", 10);
   min_opening_width_ = get_parameter("min_opening_width").as_int();
 
   map_sub_ = create_subscription<nav_msgs::msg::OccupancyGrid>(
