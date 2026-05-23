@@ -111,9 +111,9 @@ void OpeningsDetectorNode::mapCallback(const nav_msgs::msg::OccupancyGrid::Share
     return;
   }
 
-  // Step 4: select opening with highest centroid X (rightmost in map frame)
-  auto best_it = std::max_element(openings.begin(), openings.end(),
-    [](const Opening & a, const Opening & b) { return a.cx < b.cx; });
+  // Step 4: select opening with lowest centroid Y (westernmost in map frame)
+  auto best_it = std::min_element(openings.begin(), openings.end(),
+    [](const Opening & a, const Opening & b) { return a.cy < b.cy; });
 
   // Step 5: publish the selected opening as goal (in free space at frontier centroid)
   geometry_msgs::msg::PoseStamped goal;
@@ -152,7 +152,7 @@ void OpeningsDetectorNode::mapCallback(const nav_msgs::msg::OccupancyGrid::Share
 
   markers_pub_->publish(marker_array);
 
-  RCLCPP_DEBUG(get_logger(), "Detected %zu opening(s), selected rightmost at (%.2f, %.2f)",
+  RCLCPP_DEBUG(get_logger(), "Detected %zu opening(s), selected westernmost at (%.2f, %.2f)",
     openings.size(), best_it->cx, best_it->cy);
 }
 
