@@ -18,8 +18,9 @@ OpeningsDetectorNode::OpeningsDetectorNode()
     "/map", 1,
     std::bind(&OpeningsDetectorNode::mapCallback, this, std::placeholders::_1));
 
-  goal_pub_    = create_publisher<geometry_msgs::msg::PoseStamped>("/openings_detector/goal", 1);
-  markers_pub_ = create_publisher<visualization_msgs::msg::MarkerArray>("/openings_detector/markers", 10);
+  goal_pub_     = create_publisher<geometry_msgs::msg::PoseStamped>("/openings_detector/goal", 1);
+  openings_pub_ = create_publisher<geometry_msgs::msg::PoseArray>("/openings_detector/openings", 1);
+  markers_pub_  = create_publisher<visualization_msgs::msg::MarkerArray>("/openings_detector/markers", 10);
 
   RCLCPP_INFO(get_logger(), "OpeningsDetectorNode started (min_opening_width=%d cells, min_dist_from_occupied=%.2f m)",
     min_opening_width_, min_dist_from_occupied_);
@@ -122,7 +123,24 @@ void OpeningsDetectorNode::mapCallback(const nav_msgs::msg::OccupancyGrid::Share
       }),
     openings.end());
 
-  // Step 4: publish visualization markers for all openings
+  // Step 4: sort openings by ascending cy (westernmost first), then publish as PoseArray
+  std::sort(openings.begin(), openings.end(),
+    [](const Opening & a, const Opening & b) { return a.cy < b.cy; });
+
+  geometry_msgs::msg::PoseArray openings_msg;
+  openings_msg.header.stamp    = msg->header.stamp;
+  openings_msg.header.frame_id = "map";
+  for (const auto & op : openings) {
+    geometry_msgs::msg::Pose p;
+    p.position.x    = op.cx;
+    p.position.y    = op.cy;
+    p.position.z    = 0.0;
+    p.orientation.w = 1.0;
+    openings_msg.poses.push_back(p);
+  }
+  openings_pub_->publish(openings_msg);
+
+  // Step 5: publish visualization markers for all openings
   visualization_msgs::msg::MarkerArray marker_array;
 
   visualization_msgs::msg::Marker delete_marker;
@@ -137,11 +155,10 @@ void OpeningsDetectorNode::mapCallback(const nav_msgs::msg::OccupancyGrid::Share
     return;
   }
 
-  // Step 5: select opening with lowest centroid Y (westernmost in map frame)
-  auto best_it = std::min_element(openings.begin(), openings.end(),
-    [](const Opening & a, const Opening & b) { return a.cy < b.cy; });
+  // Step 6: select opening with lowest centroid Y (westernmost = first after sort)
+  auto best_it = openings.begin();
 
-  // Step 6: publish the selected opening as goal (in free space at frontier centroid)
+  // Step 7: publish the selected opening as goal (in free space at frontier centroid)
   geometry_msgs::msg::PoseStamped goal;
   goal.header.stamp    = msg->header.stamp;
   goal.header.frame_id = "map";

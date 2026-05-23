@@ -27,9 +27,9 @@ void ScanNode::Init()
   m_sub_drone_state = m_node->create_subscription<navigation_msgs::msg::DroneState>(
       "drone_state", 1, std::bind(&ScanNode::DroneStateCallBack, this, std::placeholders::_1));
 
-  m_sub_opening_goal = m_node->create_subscription<geometry_msgs::msg::PoseStamped>(
-      "/openings_detector/goal", 1,
-      std::bind(&ScanNode::OpeningGoalCallBack, this, std::placeholders::_1));
+  m_sub_openings = m_node->create_subscription<geometry_msgs::msg::PoseArray>(
+      "/openings_detector/openings", 1,
+      std::bind(&ScanNode::OpeningsCallBack, this, std::placeholders::_1));
 }
 
 void ScanNode::Run()
@@ -49,10 +49,10 @@ void ScanNode::MapCallBack(const nav_msgs::msg::OccupancyGrid::SharedPtr msg)
   m_is_map_received = true;
 }
 
-void ScanNode::OpeningGoalCallBack(const geometry_msgs::msg::PoseStamped::SharedPtr msg)
+void ScanNode::OpeningsCallBack(const geometry_msgs::msg::PoseArray::SharedPtr msg)
 {
-  m_latest_opening = *msg;
-  m_has_opening    = true;
+  m_openings      = msg->poses;
+  m_opening_index = 0;
 }
 
 void ScanNode::IsDestinationCallBack(const std_msgs::msg::Bool::SharedPtr msg)
@@ -134,18 +134,22 @@ void ScanNode::PublishNewGoal()
 {
   if (m_returning_home) return;
 
-  if (m_has_opening)
+  if (m_opening_index < m_openings.size())
   {
-    m_latest_opening.header.stamp = m_node->get_clock()->now();
-    m_current_goal = m_latest_opening;
+    geometry_msgs::msg::PoseStamped goal;
+    goal.header.stamp    = m_node->get_clock()->now();
+    goal.header.frame_id = "map";
+    goal.pose            = m_openings[m_opening_index++];
+    m_current_goal = goal;
     m_has_goal     = true;
     m_pub_goal_pose->publish(m_current_goal);
-    RCLCPP_INFO(m_node->get_logger(), "[ScanNode] New goal → opening at (%.2f, %.2f)",
+    RCLCPP_INFO(m_node->get_logger(), "[ScanNode] New goal → opening[%zu] at (%.2f, %.2f)",
+      m_opening_index - 1,
       m_current_goal.pose.position.x, m_current_goal.pose.position.y);
     return;
   }
 
-  RCLCPP_WARN(m_node->get_logger(), "[ScanNode] No openings detected — returning home (0, 0).");
+  RCLCPP_WARN(m_node->get_logger(), "[ScanNode] No more openings — returning home (0, 0).");
   geometry_msgs::msg::PoseStamped home;
   home.header.stamp    = m_node->get_clock()->now();
   home.header.frame_id = "map";
