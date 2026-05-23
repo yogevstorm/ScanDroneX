@@ -1,6 +1,7 @@
 #include <queue>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 #include "openings_detector/openings_detector_node.hpp"
 #include <visualization_msgs/msg/marker.hpp>
 
@@ -10,6 +11,9 @@ OpeningsDetectorNode::OpeningsDetectorNode()
   declare_parameter("min_opening_width", 10);
   min_opening_width_ = get_parameter("min_opening_width").as_int();
 
+  declare_parameter("min_dist_from_occupied", 0.5);
+  min_dist_from_occupied_ = static_cast<float>(get_parameter("min_dist_from_occupied").as_double());
+
   map_sub_ = create_subscription<nav_msgs::msg::OccupancyGrid>(
     "/map", 1,
     std::bind(&OpeningsDetectorNode::mapCallback, this, std::placeholders::_1));
@@ -17,8 +21,8 @@ OpeningsDetectorNode::OpeningsDetectorNode()
   goal_pub_    = create_publisher<geometry_msgs::msg::PoseStamped>("/openings_detector/goal", 1);
   markers_pub_ = create_publisher<visualization_msgs::msg::MarkerArray>("/openings_detector/markers", 10);
 
-  RCLCPP_INFO(get_logger(), "OpeningsDetectorNode started (min_opening_width=%d cells)",
-    min_opening_width_);
+  RCLCPP_INFO(get_logger(), "OpeningsDetectorNode started (min_opening_width=%d cells, min_dist_from_occupied=%.2f m)",
+    min_opening_width_, min_dist_from_occupied_);
 }
 
 void OpeningsDetectorNode::mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg)
@@ -96,7 +100,29 @@ void OpeningsDetectorNode::mapCallback(const nav_msgs::msg::OccupancyGrid::Share
     }
   }
 
-  // Step 3: publish visualization markers for all openings
+  // Step 3: remove openings whose centroid is too close to any non-free cell
+  const int check_radius = static_cast<int>(std::ceil(min_dist_from_occupied_ / res));
+  openings.erase(
+    std::remove_if(openings.begin(), openings.end(),
+      [&](const Opening & op) {
+        int gx = static_cast<int>((op.cx - ox) / res);
+        int gy = static_cast<int>((op.cy - oy) / res);
+        for (int dy = -check_radius; dy <= check_radius; ++dy) {
+          for (int dx = -check_radius; dx <= check_radius; ++dx) {
+            int nx = gx + dx;
+            int ny = gy + dy;
+            if (nx < 0 || nx >= W || ny < 0 || ny >= H) continue;
+            if (msg->data[ny * W + nx] > 0) {
+              float dist = std::sqrt(float(dx * dx + dy * dy)) * res;
+              if (dist < min_dist_from_occupied_) return true;
+            }
+          }
+        }
+        return false;
+      }),
+    openings.end());
+
+  // Step 4: publish visualization markers for all openings
   visualization_msgs::msg::MarkerArray marker_array;
 
   visualization_msgs::msg::Marker delete_marker;
@@ -111,11 +137,11 @@ void OpeningsDetectorNode::mapCallback(const nav_msgs::msg::OccupancyGrid::Share
     return;
   }
 
-  // Step 4: select opening with lowest centroid Y (westernmost in map frame)
+  // Step 5: select opening with lowest centroid Y (westernmost in map frame)
   auto best_it = std::min_element(openings.begin(), openings.end(),
     [](const Opening & a, const Opening & b) { return a.cy < b.cy; });
 
-  // Step 5: publish the selected opening as goal (in free space at frontier centroid)
+  // Step 6: publish the selected opening as goal (in free space at frontier centroid)
   geometry_msgs::msg::PoseStamped goal;
   goal.header.stamp    = msg->header.stamp;
   goal.header.frame_id = "map";

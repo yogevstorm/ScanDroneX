@@ -17,5 +17,6 @@ private:
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr  goal_pub_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr markers_pub_;
 
-  int min_opening_width_;
+  int   min_opening_width_;
+  float min_dist_from_occupied_;
 };
