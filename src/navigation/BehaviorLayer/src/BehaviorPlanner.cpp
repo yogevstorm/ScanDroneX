@@ -1,7 +1,7 @@
 #include <BehaviorPlanner.hpp>
 using namespace std::chrono_literals;
 
-void BehaviorPlanner::RunBehaviorPlanner(navigation_msgs::msg::PathMsg p_m_path, navigation_msgs::msg::DistMapMsg p_dist_map,
+void BehaviorPlanner::RunBehaviorPlanner(navigation_msgs::msg::PathMsg p_m_path, const navigation_msgs::msg::DistMapMsg& p_dist_map,
     navigation_msgs::msg::DroneState p_drone_state)
 {
     Init(p_m_path, p_dist_map, p_drone_state);
@@ -15,7 +15,7 @@ void BehaviorPlanner::RunBehaviorPlanner(navigation_msgs::msg::PathMsg p_m_path,
     SmoothLane();
 }
 
-void BehaviorPlanner::Init(navigation_msgs::msg::PathMsg p_m_path, navigation_msgs::msg::DistMapMsg p_dist_map,
+void BehaviorPlanner::Init(navigation_msgs::msg::PathMsg p_m_path, const navigation_msgs::msg::DistMapMsg& p_dist_map,
       navigation_msgs::msg::DroneState p_drone_state)
 {
     m_m_path = p_m_path;

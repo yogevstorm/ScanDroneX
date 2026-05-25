@@ -18,7 +18,7 @@ class BehaviorPlanner
 {
   public:
 
-    void RunBehaviorPlanner(navigation_msgs::msg::PathMsg p_m_path, navigation_msgs::msg::DistMapMsg p_dist_map,
+    void RunBehaviorPlanner(navigation_msgs::msg::PathMsg p_m_path, const navigation_msgs::msg::DistMapMsg& p_dist_map,
       navigation_msgs::msg::DroneState p_drone_state);
 
     navigation_msgs::msg::Lane m_lane;
@@ -46,7 +46,7 @@ class BehaviorPlanner
 
   private:
 
-    void Init(navigation_msgs::msg::PathMsg p_m_path, navigation_msgs::msg::DistMapMsg p_dist_map,
+    void Init(navigation_msgs::msg::PathMsg p_m_path, const navigation_msgs::msg::DistMapMsg& p_dist_map,
       navigation_msgs::msg::DroneState p_drone_state); 
 
     void SetStaticConstrains();

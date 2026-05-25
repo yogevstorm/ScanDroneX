@@ -29,8 +29,8 @@ class DistMap
     std::vector<int>  Map1DTo2D(nav_msgs::msg::MapMetaData p_map_info,  int p_map_ind);
     int Map2DTo1D(nav_msgs::msg::MapMetaData p_map_info, std::vector<int> p_map_coordinates);
     navigation_msgs::msg::WorldPoint Map2World2D(nav_msgs::msg::MapMetaData p_map_info, std::vector<int> p_map_coordinates);
-    std::vector<float> GenCostMap(navigation_msgs::msg::DistMapMsg p_dist_map, navigation_msgs::msg::WorldPoint p_goal, float p_collision_radius);
-    float GetDist(navigation_msgs::msg::WorldPoint p_point, navigation_msgs::msg::DistMapMsg p_dist_map);
+    std::vector<float> GenCostMap(const navigation_msgs::msg::DistMapMsg& p_dist_map, navigation_msgs::msg::WorldPoint p_goal, float p_collision_radius);
+    float GetDist(navigation_msgs::msg::WorldPoint p_point, const navigation_msgs::msg::DistMapMsg& p_dist_map);
     
 
   private:

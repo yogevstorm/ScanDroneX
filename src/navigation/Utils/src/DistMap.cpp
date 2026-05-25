@@ -1,7 +1,7 @@
 #include <DistMap.hpp>
 
 
-std::vector<float> DistMap::GenCostMap(navigation_msgs::msg::DistMapMsg p_dist_map, navigation_msgs::msg::WorldPoint p_goal, float p_collision_radius)
+std::vector<float> DistMap::GenCostMap(const navigation_msgs::msg::DistMapMsg& p_dist_map, navigation_msgs::msg::WorldPoint p_goal, float p_collision_radius)
 {
   auto p_map_info = p_dist_map.info;
   auto goal_map = World2Map2D(p_map_info, p_goal);
@@ -88,7 +88,7 @@ int DistMap::Map2DTo1D(nav_msgs::msg::MapMetaData p_map_info, std::vector<int> p
   return p_map_coordinates[1]*p_map_info.width + p_map_coordinates[0];
 }
 
-float DistMap::GetDist(navigation_msgs::msg::WorldPoint p_point, navigation_msgs::msg::DistMapMsg p_dist_map)
+float DistMap::GetDist(navigation_msgs::msg::WorldPoint p_point, const navigation_msgs::msg::DistMapMsg& p_dist_map)
 {
   int point_idx = World2Map1D(p_dist_map.info, p_point);
   return p_dist_map.data[point_idx];
